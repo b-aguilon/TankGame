@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Engine;
-using Engine.Shapes;
+using Engine.Collisions;
 
 namespace Script;
 

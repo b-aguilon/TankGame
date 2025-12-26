@@ -1,11 +1,11 @@
 using Engine;
-using Engine.Shapes;
+using Engine.Collisions;
 
 namespace Script;
 
 public class GameEntities
 {
-    private const int TANK_DIMENSIONS = 18;
+    private const int TANK_DIMENSIONS = 17;
 
     public static Player MakePlayer(Vector2 pos, float speed, int cannonHeadRotationPoint=3)
     {

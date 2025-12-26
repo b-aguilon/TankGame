@@ -1,4 +1,4 @@
-namespace Engine.Shapes;
+namespace Engine.Collisions;
 
 public static class Collision
 {
@@ -65,8 +65,7 @@ public static class Collision
         if (RayVsRect(RectCollider.GetCenter(rect), rect.Velocity*dt, expandedTarget, 
             ref contactPoint, ref contactNormal, ref distance))
         {
-            if (distance <= 1f)
-                return true;
+            return true;
         }
 
         return false;

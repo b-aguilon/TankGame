@@ -1,7 +1,7 @@
 using Engine;
 using Engine.Graphics;
 using Engine.Tilemap;
-using Engine.Shapes;
+using Engine.Collisions;
 
 using DotTiled;
 using System.Collections.Generic;
