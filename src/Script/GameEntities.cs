@@ -1,18 +1,23 @@
 using Engine;
+using Engine.Shapes;
 
 namespace Script;
 
 public class GameEntities
 {
+    private const int TANK_DIMENSIONS = 18;
+
     public static Player MakePlayer(Vector2 pos, float speed, int cannonHeadRotationPoint=3)
     {
         var player = new Player();
         player.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/tankPlayer.png");
         player.Source = new Rectangle(0, 0, player.Texture.Width, player.Texture.Height);
-        player.Width = player.Texture.Width;
-        player.Height = player.Texture.Height;
+        player.Width = TANK_DIMENSIONS;
+        player.Height = TANK_DIMENSIONS;
         player.Position = pos;
-        player.Origin = new(player.Width / 2f, player.Height / 2f);
+        player.RotationPivot = new(player.Texture.Width / 2f, player.Texture.Height / 2f);
+        player.DrawOffset = player.RotationPivot;
+        player.TankData.Collider = new RectCollider(player.Position - player.DrawOffset / 2, new(player.Width, player.Height));
         player.TankData.Direction = Vector2.UnitX;
         player.TankData.TankDir = (TankDir)(-1);
         player.TankData.Barrel = MakeTankBarrel(player.Position, cannonHeadRotationPoint);
@@ -26,10 +31,12 @@ public class GameEntities
         var enemy = new Enemy();
         enemy.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/tankPlayer.png");
         enemy.Source = new Rectangle(0, 0, enemy.Texture.Width, enemy.Texture.Height);
-        enemy.Width = enemy.Texture.Width;
-        enemy.Height = enemy.Texture.Height;
+        enemy.Width = TANK_DIMENSIONS;
+        enemy.Height = TANK_DIMENSIONS;
         enemy.Position = pos;
-        enemy.Origin = new(enemy.Width / 2f, enemy.Height / 2f);
+        enemy.RotationPivot = new(enemy.Texture.Width / 2f, enemy.Texture.Height / 2f);
+        enemy.DrawOffset = enemy.RotationPivot;
+        enemy.TankData.Collider = new RectCollider(enemy.Position - enemy.DrawOffset / 2, new(enemy.Width, enemy.Height));
         enemy.TankData.Direction = Vector2.UnitX;
         enemy.TankData.TankDir = (TankDir)(-1);
         enemy.TankData.Barrel = MakeTankBarrel(enemy.Position, cannonHeadRotationPoint);
@@ -60,7 +67,8 @@ public class GameEntities
         barrel.Width = barrel.Texture.Width;
         barrel.Height = barrel.Texture.Height;
         barrel.Position = pos;
-        barrel.Origin = new(cannonHeadRotationPoint, barrel.Height / 2);
+        barrel.RotationPivot = new(cannonHeadRotationPoint, barrel.Height / 2);
+        barrel.DrawOffset = barrel.RotationPivot;
 
         return barrel;
     }
@@ -86,6 +94,7 @@ public class Shell : Entity
 
 public struct TankData
 {
+    public RectCollider Collider;
     public Barrel Barrel;
     public Vector2 Direction;
     public TankDir TankDir;

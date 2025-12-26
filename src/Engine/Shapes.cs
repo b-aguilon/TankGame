@@ -2,115 +2,146 @@ namespace Engine.Shapes;
 
 public static class Collision
 {
-    public static void ResolveCollision(ref Vector2 position, ref Rectangle rect, Rectangle other)
+    public static bool RayVsRect(Vector2 origin, Vector2 dir, RectCollider rect, 
+        ref Vector2 contactPoint, ref Vector2 contactNormal, ref float hitNear)
     {
-        rect.X = (int)position.X;
-        rect.Y = (int)position.Y;
-
-        bool collidingLeftOrRight = 
-        CollidingLeft(rect, other) || CollidingRight(rect, other);
-        bool collidingTopOrBottom = 
-        CollidingTop(rect, other) || CollidingBottom(rect, other);
-
-        if (collidingLeftOrRight && collidingTopOrBottom)
+        var near = (rect.Position - origin) / dir;
+        var far = (rect.Position + rect.Size - origin) / dir;
+        if (near.X > far.X)
         {
-            const int DELTA = 1;
-            if (CollidingLeft(rect, other) && CollidingTop(rect, other))
-            {
-                position.Y -= DELTA;
-                position.X -= DELTA;
-            }
-            else if (CollidingLeft(rect, other) && CollidingBottom(rect, other))
-            {
-                position.Y += DELTA;
-                position.X -= DELTA;
-            }
-            else if (CollidingRight(rect, other) && CollidingTop(rect, other))
-            {
-                position.Y -= DELTA;
-                position.X += DELTA;
-            }
-            else if (CollidingRight(rect, other) && CollidingBottom(rect, other))
-            {
-                position.Y += DELTA;
-                position.X += DELTA;
-            }
+            var nearX = near.X;
+            near.X = far.X;
+            far.X = nearX;
         }
-        else
+        if (near.Y > far.Y)
         {
-            if (CollidingTop(rect, other))
-            {
-                position.Y = other.Top - rect.Height;
-            }
-            else if (CollidingBottom(rect, other))
-            {
-                position.Y = other.Bottom;
-            }
-            else if (CollidingLeft(rect, other))
-            {
-                position.X = other.Left - rect.Width;
-            }
-            else if (CollidingRight(rect, other))
-            {
-                position.X = other.Right;
-            }
+            var nearY = near.Y;
+            near.Y = far.Y;
+            far.Y = nearY;
         }
+        
+        if (near.X > far.Y || near.Y > far.X)
+        {
+            return false;
+        }
+
+        hitNear = MathF.Max(near.X, near.Y);
+        if (hitNear > 1f || hitNear < 0f)
+        {
+            return false;
+        }
+
+        contactPoint = origin + hitNear * dir;
+
+        if (near.X > near.Y)
+        {
+            if (dir.X < 0)
+                contactNormal = new(1, 0);
+            else
+                contactNormal = new(-1, 0);
+        }
+        else if (near.X < near.Y)
+        {
+            if (dir.Y < 0)
+                contactNormal = new(0, 1);
+            else
+                contactNormal = new(0, -1);
+        }
+
+        return true;
     }
 
-    public static bool CollidingTop(Rectangle rect, Rectangle other, float nextMove=0)
+    public static bool DynamicRectVsRect(RectCollider rect, RectCollider target, 
+        ref Vector2 contactPoint, ref Vector2 contactNormal, ref float distance)
     {
-        return rect.Y + rect.Height + nextMove > other.Y &&
-               rect.X < other.X + other.Width && rect.X + rect.Width > other.X &&
-               rect.Y < other.Y;
+        var dt = Global.DELTA_TIME;
+        if (rect.Velocity.X == 0 && rect.Velocity.Y == 0)
+            return false;
+
+        RectCollider expandedTarget = new();
+        expandedTarget.Position = target.Position - rect.Size / 2f;
+        expandedTarget.Size = target.Size + rect.Size;
+
+        if (RayVsRect(RectCollider.GetCenter(rect), rect.Velocity*dt, expandedTarget, 
+            ref contactPoint, ref contactNormal, ref distance))
+        {
+            if (distance <= 1f)
+                return true;
+        }
+
+        return false;
     }
 
-    public static bool CollidingBottom(Rectangle rect, Rectangle other, float nextMove=0)
+    public static void HandleRectVsRectCollision()
     {
-        return rect.Y + nextMove < other.Y + other.Height &&
-               rect.X < other.X + other.Width && rect.X + rect.Width > other.X &&
-               rect.Y + rect.Height > other.Y + other.Height;
-    }
-
-    public static bool CollidingLeft(Rectangle rect, Rectangle other, float nextMove=0)
-    {
-        return rect.X + rect.Width + nextMove > other.X &&
-               rect.Y < other.Y + other.Height && rect.Y + rect.Height > other.Y &&
-               rect.X < other.X;
-    }
-
-    public static bool CollidingRight(Rectangle rect, Rectangle other, float nextMove=0)
-    {
-        return rect.X + nextMove < other.X + other.Width &&
-               rect.Y < other.Y + other.Height && rect.Y + rect.Height > other.Y &&
-               rect.X + rect.Width > other.X + other.Width;
+        
     }
 }
 
-public enum RectCollideSide {None, Top, Bottom, Left, Right}
-
-public struct Circle
+public struct RectCollider
 {
-    public int X {get;set;}
-    public int Y {get;set;}
-    public int Radius {get;set;}
+    public Vector2 Position;
+    public Vector2 Size;
+    public Vector2 Velocity;
 
-    public Circle()
+    public RectCollider()
     {
-        X = 0;
-        Y = 0;
+        Position = Vector2.Zero;
+        Size = Vector2.Zero;
+        Velocity = Vector2.Zero;
+    }
+
+    public RectCollider(Vector2 pos, Vector2 size)
+    {
+        Position = pos;
+        Size = size;
+        Velocity = Vector2.Zero;
+    }
+
+    public static Vector2 GetCenter(RectCollider rect)
+    {
+        return rect.Position + (rect.Size / 2f);
+    }
+
+    public static bool ContainsPoint(RectCollider rect, Vector2 point)
+    {
+        return point.X >= rect.Position.X && point.X <= rect.Position.X + rect.Size.X
+            && point.Y >= rect.Position.Y && point.Y <= rect.Position.Y + rect.Size.Y;
+    }
+
+    public static bool Intersects(RectCollider rect, RectCollider other)
+    {
+        return
+        rect.Position.X < other.Position.X + other.Size.X &&
+        rect.Position.Y < other.Position.Y + other.Size.Y &&
+        rect.Position.X + rect.Size.X > other.Position.X &&
+        rect.Position.Y + rect.Size.Y > other.Position.Y;
+    }
+}
+
+public struct CircleCollider
+{
+    public Vector2 Position;
+    public float Radius;
+    public Vector2 Velocity;
+
+    public CircleCollider()
+    {
+        Position = Vector2.Zero;
         Radius = 0;
+        Velocity = Vector2.Zero;
         throw new NotImplementedException();
     }
 
-    public Circle(int x, int y, int radius)
+    public CircleCollider(Vector2 pos, float radius)
     {
-        X = x;
-        Y = y;
+        Position = pos;
         Radius = radius;
+        Velocity = Vector2.Zero;
         throw new NotImplementedException();
     }
 
-    public Vector2 GetCircleEdge(float angleRadian)
+    public static Vector2 GetCircleEdge(float angleRadian)
     {
         throw new NotImplementedException();
     }

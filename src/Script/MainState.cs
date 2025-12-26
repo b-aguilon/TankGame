@@ -16,8 +16,6 @@ class MainState : GameState
     private const float ENEMY_STATIONARY_SHOOT_DELTA = 2f;
 
     private Player player;
-    private Rectangle playerCollider;
-    private Rectangle testCollider;
     private MapData mapData;
 
     private readonly List<Entity> entities = new List<Entity>();
@@ -25,8 +23,6 @@ class MainState : GameState
     public override void Load()
     {
         player = GameEntities.MakePlayer(new Vector2(100, 100), speed:45);
-        playerCollider = new Rectangle((int)player.Position.X, (int)player.Position.Y, player.Width, player.Height);
-        testCollider = new Rectangle(200, 200, 40, 80);
         var enemy = GameEntities.MakeTankStationary(new(200, 200));
 
         var map = Levels.Loader.LoadMap("assets/maps/world.tmx");
@@ -113,10 +109,7 @@ class MainState : GameState
             var shootPos = player.Position + shootDir * BARREL_LENGTH;
             entities.Add(GameEntities.MakeShell(shootPos, player.TankData.Barrel.Rotation, SHELL_SPEED));
         }
-
-        Collision.ResolveCollision(ref player.Position, ref playerCollider, testCollider);
-
-        TankController.MoveTank(player, ref player.TankData);
+        TankController.MoveTank(player, entities, ref player.TankData);
 
         rotateTowardTarget(player.TankData.Barrel, mouseWorldPos);
     }
@@ -163,8 +156,10 @@ class MainState : GameState
             Renderer.DrawEntity(player);
             Renderer.DrawEntity(player.TankData.Barrel);
 
-            Renderer.DrawRectangle(playerCollider, Color.Red);
-            Renderer.DrawRectangle(testCollider, Color.Red);
+            Renderer.DrawRectangle(player.TankData.Collider, Color.Red);
+            var enemy = (Enemy)entities.First(a => a is Enemy);
+            Renderer.DrawRectangle(enemy.TankData.Collider, Color.Red);
+            Renderer.DrawLine(player.Position, Renderer.Get().GetWorldMousePos(), Color.Blue);
 
             Levels.DrawLayers(mapData, ["HouseRoofs"]);
         }, 
