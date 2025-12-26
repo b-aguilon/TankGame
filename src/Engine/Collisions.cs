@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Engine.Collisions;
 
 public static class Collision
@@ -7,6 +9,15 @@ public static class Collision
     {
         var near = (rect.Position - origin) / dir;
         var far = (rect.Position + rect.Size - origin) / dir;
+        if (float.IsNaN(near.X) || float.IsNaN(near.Y))
+        {
+            return false;
+        }
+        if (float.IsNaN(far.X) || float.IsNaN(far.Y))
+        {
+            return false;
+        }
+
         if (near.X > far.X)
         {
             var nearX = near.X;
@@ -71,13 +82,30 @@ public static class Collision
         return false;
     }
 
-    public static void HandleRectVsRectCollision()
+    public static void HandleRectVsRectCollisions(ref RectCollider collider, List<RectCollider> colliders)
     {
-        
+        float distance = 0f;
+        Vector2 contact = new(), normal = new();
+
+        var sorted = new List<(float dist, RectCollider col, Vector2 norm)>();
+
+        foreach (var c in colliders)
+        {
+            if (DynamicRectVsRect(collider, c, ref contact, ref normal, ref distance) && c != collider)
+            {
+                sorted.Add((distance, c, normal));
+            }
+        }
+
+        foreach (var tuple in sorted.OrderBy(t => t.dist))
+        {
+            var vel = collider.Velocity;
+            collider.Velocity += (tuple.norm * new Vector2(MathF.Abs(vel.X), MathF.Abs(vel.Y)) * (1f - tuple.dist));
+        }
     }
 }
 
-public struct RectCollider
+public class RectCollider
 {
     public Vector2 Position;
     public Vector2 Size;
@@ -118,7 +146,7 @@ public struct RectCollider
     }
 }
 
-public struct CircleCollider
+public class CircleCollider
 {
     public Vector2 Position;
     public float Radius;

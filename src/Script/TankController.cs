@@ -9,7 +9,7 @@ public static class TankController
     private const float TANK_ROT_SPEED = MathHelper.Pi / 70f;
     private const float EPSILON = MathHelper.Pi / 30f;
 
-    public static void MoveTank(Entity ent, List<Entity> entities, ref TankData tankData)
+    public static void MoveTank(Entity ent, ref RectCollider entityCollider, TankData tankData, List<RectCollider> colliders)
     {
         const float PI = MathHelper.Pi;
         bool moving = true;
@@ -46,22 +46,13 @@ public static class TankController
         }
 
         tankData.Direction = moving ? (new Vector2(MathF.Cos(ent.Rotation), MathF.Sin(ent.Rotation))) : Vector2.Zero;
-        tankData.Collider.Velocity = tankData.Direction * tankData.Speed;
-        tankData.Collider.Position = ent.Position - ent.DrawOffset / 2;
+        entityCollider.Velocity = tankData.Direction * tankData.Speed;
+        entityCollider.Position = ent.Position - ent.DrawOffset / 2;
 
-        float distance = 0f;
-        Vector2 contact = new(), normal = new();
-        var enemy = (Enemy)entities.First(a => a is Enemy);
-        var enemyRect = enemy.TankData.Collider;
+        Collision.HandleRectVsRectCollisions(ref entityCollider, colliders); 
 
-        if (Collision.DynamicRectVsRect(tankData.Collider, enemyRect, ref contact, ref normal, ref distance) && distance <= 1f)
-        {
-            var vel = tankData.Collider.Velocity;
-            tankData.Collider.Velocity += (normal * new Vector2(MathF.Abs(vel.X), MathF.Abs(vel.Y)) * (1f - distance));
-        }
-
-        ent.Position += tankData.Collider.Velocity * Global.DELTA_TIME; 
-        tankData.Collider.Position = ent.Position - ent.DrawOffset / 2;
+        ent.Position += entityCollider.Velocity * Global.DELTA_TIME; 
+        entityCollider.Position = ent.Position - ent.DrawOffset / 2;
         tankData.Barrel.Position = ent.Position;
     }
 

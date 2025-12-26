@@ -17,7 +17,7 @@ public class GameEntities
         player.Position = pos;
         player.RotationPivot = new(player.Texture.Width / 2f, player.Texture.Height / 2f);
         player.DrawOffset = player.RotationPivot;
-        player.TankData.Collider = new RectCollider(player.Position - player.DrawOffset / 2, new(player.Width, player.Height));
+        player.Collider = new RectCollider(player.Position - player.DrawOffset / 2, new(player.Width, player.Height));
         player.TankData.Direction = Vector2.UnitX;
         player.TankData.TankDir = (TankDir)(-1);
         player.TankData.Barrel = MakeTankBarrel(player.Position, cannonHeadRotationPoint);
@@ -36,7 +36,7 @@ public class GameEntities
         enemy.Position = pos;
         enemy.RotationPivot = new(enemy.Texture.Width / 2f, enemy.Texture.Height / 2f);
         enemy.DrawOffset = enemy.RotationPivot;
-        enemy.TankData.Collider = new RectCollider(enemy.Position - enemy.DrawOffset / 2, new(enemy.Width, enemy.Height));
+        enemy.Collider = new RectCollider(enemy.Position - enemy.DrawOffset / 2, new(enemy.Width, enemy.Height));
         enemy.TankData.Direction = Vector2.UnitX;
         enemy.TankData.TankDir = (TankDir)(-1);
         enemy.TankData.Barrel = MakeTankBarrel(enemy.Position, cannonHeadRotationPoint);
@@ -77,11 +77,13 @@ public class GameEntities
 public class Player : Entity
 {
     public TankData TankData;
+    public RectCollider Collider;
 }
 
 public class Enemy : Entity
 {
     public TankData TankData;
+    public RectCollider Collider;
     public float EnemyShootTime = 0f;
 }
 
@@ -94,7 +96,6 @@ public class Shell : Entity
 
 public struct TankData
 {
-    public RectCollider Collider;
     public Barrel Barrel;
     public Vector2 Direction;
     public TankDir TankDir;
