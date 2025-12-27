@@ -33,8 +33,14 @@ class MainState : GameState
         {
             Map = map,
             VisualLayers = map.Layers.OfType<Group>().Single(l => l.Name == "Visuals").Layers.OfType<TileLayer>(),
+            CollisionLayer = map.Layers.OfType<ObjectLayer>().Single(l => l.Name == "Collisions"),
             TilesetTextures = Levels.LoadTilesetTextures(map)  
         };
+
+        foreach (var rect in mapData.CollisionLayer.Objects.OfType<RectangleObject>())
+        {
+            colliders.Add(new RectCollider(new(rect.X, rect.Y), new(rect.Width, rect.Height)));
+        }
 
         entities.Add(player);
         entities.Add(enemy);
@@ -112,6 +118,7 @@ class MainState : GameState
             var shootPos = player.Position + shootDir * BARREL_LENGTH;
             entities.Add(GameEntities.MakeShell(shootPos, player.TankData.Barrel.Rotation, SHELL_SPEED));
         }
+
         TankController.MoveTank(player, ref player.Collider, player.TankData, colliders);
 
         rotateTowardTarget(player.TankData.Barrel, mouseWorldPos);
