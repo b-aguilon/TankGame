@@ -1,5 +1,6 @@
 using DotTiled;
 using DotTiled.Serialization;
+using Engine.Collisions;
 using System.Collections.Generic;
 
 namespace Engine.Tilemap;
@@ -24,11 +25,13 @@ static class Levels
 
     private static void drawLayer(MapData data, TileLayer layer)
     {
+        int y, x;
+        uint tileGID;
         for (int i = 0; i < layer.Width * layer.Height; i++)
         {
-            int y = i / layer.Width;
-            int x = i % layer.Width;
-            var tileGID = layer.GetGlobalTileIDAtCoord(x, y);
+            y = i / layer.Width;
+            x = i % layer.Width;
+            tileGID = layer.GetGlobalTileIDAtCoord(x, y);
             if (tileGID == 0)
                 continue;
             

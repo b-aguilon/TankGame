@@ -24,9 +24,7 @@ class MainState : GameState
     public override void Load()
     {
         player = GameEntities.MakePlayer(new Vector2(100, 100), speed:45);
-        colliders.Add(player.Collider);
         var enemy = GameEntities.MakeTankStationary(new(200, 200));
-        colliders.Add(enemy.Collider);
 
         var map = Levels.Loader.LoadMap("assets/maps/world.tmx");
         mapData = new MapData
@@ -36,7 +34,6 @@ class MainState : GameState
             CollisionLayer = map.Layers.OfType<ObjectLayer>().Single(l => l.Name == "Collisions"),
             TilesetTextures = Levels.LoadTilesetTextures(map)  
         };
-
         foreach (var rect in mapData.CollisionLayer.Objects.OfType<RectangleObject>())
         {
             colliders.Add(new RectCollider(new(rect.X, rect.Y), new(rect.Width, rect.Height)));
@@ -119,7 +116,7 @@ class MainState : GameState
             entities.Add(GameEntities.MakeShell(shootPos, player.TankData.Barrel.Rotation, SHELL_SPEED));
         }
 
-        TankController.MoveTank(player, ref player.Collider, player.TankData, colliders);
+        TankController.UpdateTank(player, player.TankData, colliders);
 
         rotateTowardTarget(player.TankData.Barrel, mouseWorldPos);
     }
@@ -166,9 +163,9 @@ class MainState : GameState
             Renderer.DrawEntity(player);
             Renderer.DrawEntity(player.TankData.Barrel);
 
-            Renderer.DrawRectangle(player.Collider, Color.Red);
+            Renderer.DrawRectangle(player.TankData.Collider, Color.Red);
             var enemy = (Enemy)entities.First(a => a is Enemy);
-            Renderer.DrawRectangle(enemy.Collider, Color.Red);
+            Renderer.DrawRectangle(enemy.TankData.Collider, Color.Red);
             Renderer.DrawLine(player.Position, Renderer.Get().GetWorldMousePos(), Color.Blue);
 
             Levels.DrawLayers(mapData, ["HouseRoofs"]);
@@ -189,10 +186,5 @@ class MainState : GameState
         {
             tex.Dispose();
         }
-    }
-
-    private void addTank(Entity ent)
-    {
-        
     }
 }

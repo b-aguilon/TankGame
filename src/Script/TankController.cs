@@ -9,7 +9,14 @@ public static class TankController
     private const float TANK_ROT_SPEED = MathHelper.Pi / 70f;
     private const float EPSILON = MathHelper.Pi / 30f;
 
-    public static void MoveTank(Entity ent, ref RectCollider entityCollider, TankData tankData, List<RectCollider> colliders)
+    public static void UpdateTank(Entity ent, TankData tankData, List<RectCollider> colliders)
+    {
+        changeTankDirection(ent, tankData);
+        handleTankCollisions(ent, tankData, colliders);
+        tankData.Barrel.Position = ent.Position;
+    }
+
+    private static void changeTankDirection(Entity ent, TankData tankData)
     {
         const float PI = MathHelper.Pi;
         bool moving = true;
@@ -46,16 +53,8 @@ public static class TankController
         }
 
         tankData.Direction = moving ? (new Vector2(MathF.Cos(ent.Rotation), MathF.Sin(ent.Rotation))) : Vector2.Zero;
-        entityCollider.Velocity = tankData.Direction * tankData.Speed;
-        entityCollider.Position = ent.Position - ent.DrawOffset / 2;
-
-        Collision.HandleRectVsRectCollisions(ref entityCollider, colliders); 
-
-        ent.Position += entityCollider.Velocity * Global.DELTA_TIME; 
-        entityCollider.Position = ent.Position - ent.DrawOffset / 2;
-        tankData.Barrel.Position = ent.Position;
     }
-
+    
     private static void changeTankRotation(Entity tank, float targetRotation)
     {
         var canFlip180 = (float rotation) =>
@@ -95,5 +94,16 @@ public static class TankController
         {
             tank.Rotation = targetRotation;
         }
+    }
+
+    private static void handleTankCollisions(Entity ent, TankData tankData, List<RectCollider> colliders)
+    {
+        tankData.Collider.Velocity = tankData.Direction * tankData.Speed;
+        tankData.Collider.Position = ent.Position - ent.DrawOffset / 2;
+
+        Collision.HandleRectVsRectCollisions(tankData.Collider, colliders); 
+
+        ent.Position += tankData.Collider.Velocity * Global.DELTA_TIME; 
+        tankData.Collider.Position = ent.Position - ent.DrawOffset / 2;
     }
 }
