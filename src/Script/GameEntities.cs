@@ -14,6 +14,7 @@ public class GameEntities
         player.Source = new Rectangle(0, 0, player.Texture.Width, player.Texture.Height);
         player.Width = TANK_DIMENSIONS;
         player.Height = TANK_DIMENSIONS;
+        player.LayerDepth = 0.4f;
         player.Position = pos;
         player.RotationPivot = new(player.Texture.Width / 2f, player.Texture.Height / 2f);
         player.DrawOffset = player.RotationPivot;
@@ -22,6 +23,7 @@ public class GameEntities
         player.TankData.Direction = Vector2.UnitX;
         player.TankData.TankDir = (TankDir)(-1);
         player.TankData.Barrel = MakeTankBarrel(player.Position, cannonHeadRotationPoint);
+        player.TankData.Barrel.LayerDepth = 0.45f;
         player.TankData.Speed = speed;
 
         return player;
@@ -42,6 +44,7 @@ public class GameEntities
         enemy.TankData.Direction = Vector2.UnitX;
         enemy.TankData.TankDir = (TankDir)(-1);
         enemy.TankData.Barrel = MakeTankBarrel(enemy.Position, cannonHeadRotationPoint);
+        enemy.TankData.Barrel.LayerDepth = 0.1f;
         enemy.TankData.Speed = 0;
         
         return enemy;

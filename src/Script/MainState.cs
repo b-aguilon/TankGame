@@ -40,6 +40,7 @@ class MainState : GameState
         }
 
         entities.Add(player);
+        entities.Add(player.TankData.Barrel);
         entities.Add(enemy);
         entities.Add(enemy.TankData.Barrel);
     }
@@ -50,7 +51,7 @@ class MainState : GameState
 
         updatePlayer(dt);
 
-        foreach (var ent in entities.Where(e => e is not Player).ToArray())
+        foreach (var ent in entities.ToArray())
         {
             switch (ent)
             {
@@ -72,6 +73,7 @@ class MainState : GameState
     {
         var kState = Global.K_State;
         var mouseWorldPos = Renderer.Get().GetWorldMousePos();
+        var shootDir = Vector2.Normalize(mouseWorldPos - player.TankData.Barrel.Position);
 
         if (kState.IsKeyDown(Keys.A) && kState.IsKeyDown(Keys.W))
         {
@@ -111,14 +113,12 @@ class MainState : GameState
         }
         if (Global.LeftMouseClicked())
         {
-            var shootDir = Vector2.Normalize(mouseWorldPos - player.TankData.Barrel.Position);
             var shootPos = player.Position + shootDir * BARREL_LENGTH;
             entities.Add(GameEntities.MakeShell(shootPos, player.TankData.Barrel.Rotation, SHELL_SPEED));
         }
 
         TankController.UpdateTank(player, player.TankData, colliders);
-
-        rotateTowardTarget(player.TankData.Barrel, mouseWorldPos);
+        player.TankData.Barrel.Rotation = MathF.Atan2(shootDir.Y, shootDir.X);
     }
 
     private void updateEnemyStationary(Enemy enemy, float dt)
@@ -126,7 +126,7 @@ class MainState : GameState
         enemy.EnemyShootTime += dt;
         var shootDir = Vector2.Normalize(player.Position - enemy.Position);
         var shootAngle = MathF.Atan2(shootDir.Y, shootDir.X);
-        rotateTowardTarget(enemy.TankData.Barrel, player.Position);
+        enemy.TankData.Barrel.Rotation = MathF.Atan2(shootDir.Y, shootDir.X);
 
         if (enemy.EnemyShootTime > ENEMY_STATIONARY_SHOOT_DELTA)
         {
@@ -145,28 +145,17 @@ class MainState : GameState
         }
     }
 
-    private void rotateTowardTarget(Entity entity, Vector2 target)
-    {
-        entity.Rotation = MathF.Atan2(target.Y - entity.Position.Y, target.X - entity.Position.X);
-    }
-
     public override void Draw()
     {
         Renderer.Get().Draw( 
         (world) =>
         {
             Levels.DrawLayers(mapData, ["Ground", "Ponds", "Paths", "HouseWalls", "HouseDoors", "FencesBushes"]);
-            foreach (var ent in entities.Where(e => e is not Player))
+
+            foreach (var ent in entities.OrderBy(e => e.LayerDepth))
             {
                 Renderer.DrawEntity(ent);
             }
-            Renderer.DrawEntity(player);
-            Renderer.DrawEntity(player.TankData.Barrel);
-
-            Renderer.DrawRectangle(player.TankData.Collider, Color.Red);
-            var enemy = (Enemy)entities.First(a => a is Enemy);
-            Renderer.DrawRectangle(enemy.TankData.Collider, Color.Red);
-            Renderer.DrawLine(player.Position, Renderer.Get().GetWorldMousePos(), Color.Blue);
 
             Levels.DrawLayers(mapData, ["HouseRoofs"]);
         }, 

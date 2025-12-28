@@ -10,5 +10,6 @@ public abstract class Entity
     public Vector2 RotationPivot = Vector2.Zero;
     public Vector2 DrawOffset = Vector2.Zero;
     public float Rotation = 0f;
+    public float LayerDepth = 0f;
     public int Width = 1, Height = 1;
 }
