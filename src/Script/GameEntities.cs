@@ -106,7 +106,10 @@ public class TankData
     public float Speed;
 }
 
-public class Barrel : Entity {}
+public class Barrel : Entity
+{
+    public Vector2 Direction;
+}
 
 public enum TankDir 
 {UpLeft, Up, UpRight, Right, DownRight, Down, DownLeft, Left}

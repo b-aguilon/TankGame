@@ -13,7 +13,7 @@ public static class TankController
     {
         changeTankDirection(ent, tankData);
         handleTankCollisions(ent, tankData, colliders);
-        tankData.Barrel.Position = ent.Position;
+        updateTankBarrel(ent, tankData);
     }
 
     private static void changeTankDirection(Entity ent, TankData tankData)
@@ -52,7 +52,14 @@ public static class TankController
                 break;
         }
 
-        tankData.Direction = moving ? (new Vector2(MathF.Cos(ent.Rotation), MathF.Sin(ent.Rotation))) : Vector2.Zero;
+        if (moving)
+        {
+            tankData.Direction = new Vector2(MathF.Cos(ent.Rotation), MathF.Sin(ent.Rotation));
+        }
+        else
+        {
+            tankData.Direction = Vector2.Zero;
+        }
     }
     
     private static void changeTankRotation(Entity tank, float targetRotation)
@@ -105,5 +112,11 @@ public static class TankController
 
         ent.Position += tankData.Collider.Velocity * Global.DELTA_TIME; 
         tankData.Collider.Position = ent.Position - ent.DrawOffset / 2;
+    }
+
+    private static void updateTankBarrel(Entity ent, TankData tankData)
+    {
+        tankData.Barrel.Rotation = MathF.Atan2(tankData.Barrel.Direction.Y, tankData.Barrel.Direction.X);
+        tankData.Barrel.Position = ent.Position;
     }
 }

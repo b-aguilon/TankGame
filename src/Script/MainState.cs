@@ -73,7 +73,7 @@ class MainState : GameState
     {
         var kState = Global.K_State;
         var mouseWorldPos = Renderer.Get().GetWorldMousePos();
-        var shootDir = Vector2.Normalize(mouseWorldPos - player.TankData.Barrel.Position);
+        player.TankData.Barrel.Direction = Vector2.Normalize(mouseWorldPos - player.TankData.Barrel.Position);
 
         if (kState.IsKeyDown(Keys.A) && kState.IsKeyDown(Keys.W))
         {
@@ -111,28 +111,28 @@ class MainState : GameState
         {
             player.TankData.TankDir = (TankDir)(-1);
         }
+
         if (Global.LeftMouseClicked())
         {
-            var shootPos = player.Position + shootDir * BARREL_LENGTH;
+            var shootPos = player.Position + player.TankData.Barrel.Direction * BARREL_LENGTH;
             entities.Add(GameEntities.MakeShell(shootPos, player.TankData.Barrel.Rotation, SHELL_SPEED));
         }
 
         TankController.UpdateTank(player, player.TankData, colliders);
-        player.TankData.Barrel.Rotation = MathF.Atan2(shootDir.Y, shootDir.X);
     }
 
     private void updateEnemyStationary(Enemy enemy, float dt)
     {
         enemy.EnemyShootTime += dt;
-        var shootDir = Vector2.Normalize(player.Position - enemy.Position);
-        var shootAngle = MathF.Atan2(shootDir.Y, shootDir.X);
-        enemy.TankData.Barrel.Rotation = MathF.Atan2(shootDir.Y, shootDir.X);
+        enemy.TankData.Barrel.Direction = Vector2.Normalize(player.Position - enemy.Position);
 
         if (enemy.EnemyShootTime > ENEMY_STATIONARY_SHOOT_DELTA)
         {
-            entities.Add(GameEntities.MakeShell(enemy.Position + shootDir * BARREL_LENGTH, shootAngle, SHELL_SPEED));
+            entities.Add(GameEntities.MakeShell(enemy.Position + enemy.TankData.Barrel.Direction * BARREL_LENGTH, enemy.TankData.Barrel.Rotation, SHELL_SPEED));
             enemy.EnemyShootTime = 0f;
         }
+
+        TankController.UpdateTank(enemy, enemy.TankData, colliders);
     }
 
     private void updateShell(Shell shell, float dt)
