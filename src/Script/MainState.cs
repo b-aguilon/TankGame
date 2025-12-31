@@ -161,7 +161,6 @@ class MainState : GameState
         }, 
         (screen) =>
         {
-            
         });
     }
 
