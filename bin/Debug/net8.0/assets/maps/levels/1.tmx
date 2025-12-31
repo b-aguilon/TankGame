@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="57">
+ <tileset firstgid="1" source="tankSet.tsx"/>
+ <group id="2" name="Visuals">
+  <layer id="1" name="Ground" width="30" height="20">
+   <data encoding="csv">
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,2,2,1,1,2,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,2,2,2,2,2,1,1,2,2,2,2,2,2,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,2,2,1,1,2,1,1,1,2,2,1,1,2,2,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,2,2,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+</data>
+  </layer>
+ </group>
+ <objectgroup id="4" name="Collisions">
+  <object id="1" x="0" y="0" width="32" height="640"/>
+  <object id="2" x="32" y="608" width="928" height="32"/>
+  <object id="3" x="928" y="0" width="32" height="608"/>
+  <object id="7" x="32" y="0" width="896" height="32"/>
+  <object id="21" x="320" y="352" width="64" height="192"/>
+  <object id="23" x="384" y="384" width="32" height="32"/>
+  <object id="24" x="288" y="384" width="32" height="32"/>
+  <object id="25" x="256" y="512" width="64" height="64"/>
+  <object id="26" x="384" y="512" width="64" height="64"/>
+  <object id="28" x="288" y="256" width="160" height="32"/>
+  <object id="31" x="256" y="224" width="64" height="32"/>
+  <object id="32" x="384" y="224" width="32" height="32"/>
+  <object id="33" x="384" y="288" width="32" height="32"/>
+  <object id="36" x="256" y="288" width="64" height="32"/>
+  <object id="37" x="576" y="64" width="64" height="224"/>
+  <object id="38" x="544" y="96" width="32" height="32"/>
+  <object id="39" x="640" y="96" width="32" height="32"/>
+  <object id="41" x="512" y="256" width="64" height="64"/>
+  <object id="42" x="640" y="256" width="64" height="64"/>
+ </objectgroup>
+ <objectgroup id="5" name="Spawn">
+  <object id="8" name="Stationary" x="803.333" y="126.667" visible="0">
+   <point/>
+  </object>
+  <object id="13" name="Moving" x="759.333" y="372">
+   <point/>
+  </object>
+  <object id="14" name="Fast" x="722" y="235.333">
+   <point/>
+  </object>
+  <object id="15" name="Fast" x="701.333" y="553.333">
+   <point/>
+  </object>
+  <object id="16" name="Moving" x="767.333" y="54.6667">
+   <point/>
+  </object>
+  <object id="17" name="Player" x="142" y="288.667">
+   <point/>
+  </object>
+  <object id="43" name="Fast" x="299.333" y="177.333">
+   <point/>
+  </object>
+  <object id="45" name="Moving" x="158" y="97.3333" visible="0">
+   <point/>
+  </object>
+  <object id="47" name="Moving" x="145.333" y="435.333">
+   <point/>
+  </object>
+  <object id="49" name="Moving" x="414.667" y="88.6667">
+   <point/>
+  </object>
+  <object id="51" name="Moving" x="122" y="100.667">
+   <point/>
+  </object>
+  <object id="52" name="Moving" x="157.333" y="562">
+   <point/>
+  </object>
+  <object id="53" name="Moving" x="537.333" y="572">
+   <point/>
+  </object>
+  <object id="54" name="Fast" x="906" y="519.333">
+   <point/>
+  </object>
+  <object id="55" name="Fast" x="577.333" y="386">
+   <point/>
+  </object>
+  <object id="56" name="Fast" x="356" y="332.667">
+   <point/>
+  </object>
+ </objectgroup>
+</map>
