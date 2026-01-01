@@ -1,6 +1,8 @@
 using Engine;
 using Engine.Collisions;
 
+using System.Collections.Generic;
+
 namespace Script;
 
 public class GameEntities
@@ -20,13 +22,12 @@ public class GameEntities
         player.RotationPivot = new(player.Texture.Width / 2f, player.Texture.Height / 2f);
         player.DrawOffset = player.RotationPivot;
         player.ShellSpeed = 110;
-        player.TankData = new();
-        player.TankData.Collider = new RectCollider(player.Position - player.DrawOffset / 2, new(player.Width, player.Height));
-        player.TankData.Direction = Vector2.UnitX;
-        player.TankData.TankDir = (TankDir)(-1);
-        player.TankData.Barrel = MakeTankBarrel(player.Position, BARREL_ROT_POINT);
-        player.TankData.Barrel.LayerDepth = 0.45f;
-        player.TankData.Speed = speed;
+        player.Collider = new RectCollider(player.Position - player.DrawOffset / 2, new(player.Width, player.Height));
+        player.Direction = Vector2.UnitX;
+        player.TankDir = (TankDir)(-1);
+        player.Barrel = MakeTankBarrel(player.Position, BARREL_ROT_POINT);
+        player.Barrel.LayerDepth = 0.45f;
+        player.Speed = speed;
 
         return player;
     }
@@ -57,15 +58,14 @@ public class GameEntities
         enemy.RotationPivot = new(enemy.Texture.Width / 2f, enemy.Texture.Height / 2f);
         enemy.DrawOffset = enemy.RotationPivot;
         enemy.ShellSpeed = shellSpeed;
-        enemy.TankData = new();
-        enemy.TankData.Collider = new RectCollider(enemy.Position - enemy.DrawOffset / 2, new(enemy.Width, enemy.Height));
-        enemy.TankData.Direction = Vector2.UnitX;
-        enemy.TankData.TankDir = TankDir.Right;
-        enemy.TankData.Barrel = MakeTankBarrel(enemy.Position, BARREL_ROT_POINT);
-        enemy.TankData.Barrel.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/{barrelFile}");
-        enemy.TankData.Barrel.LayerDepth = 0.1f;
+        enemy.Collider = new RectCollider(enemy.Position - enemy.DrawOffset / 2, new(enemy.Width, enemy.Height));
+        enemy.Direction = Vector2.UnitX;
+        enemy.TankDir = TankDir.Right;
+        enemy.Barrel = MakeTankBarrel(enemy.Position, BARREL_ROT_POINT);
+        enemy.Barrel.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/{barrelFile}");
+        enemy.Barrel.LayerDepth = 0.1f;
         enemy.MinFollowDistance = minFollowDistance;
-        enemy.TankData.Speed = speed;
+        enemy.Speed = speed;
         
         return enemy;
     }
@@ -97,21 +97,95 @@ public class GameEntities
 
         return barrel;
     }
+
+    private static event EventHandler tankShot;
+
+    public static void AddShootListener(EventHandler handler)
+    {
+        tankShot += handler;
+    }
+
+    public static void RemoveShootListener(EventHandler handler)
+    {
+        tankShot -= handler;
+    }
+
+    public static void ClearShootListeners()
+    {
+        tankShot = null;
+    }
+
+    public static void TriggerEntityOnShoot(Entity ent)
+    {
+        tankShot?.Invoke(ent, EventArgs.Empty);
+    }
+
+    private static event EventHandler<List<Entity>> entityAdded;
+    private static event EventHandler<List<Entity>> entityRemoved;
+
+    public static void TriggerAddEntity(object entity, List<Entity> entities)
+    {
+        entityAdded?.Invoke(entity, entities);
+    }
+
+    public static void TriggerRemoveEntity(object entity, List<Entity> entities)
+    {
+        entityRemoved?.Invoke(entity, entities);
+    }
+
+    public static void AddEntityAddedListener(EventHandler<List<Entity>> handler)
+    {
+        entityAdded += handler;
+    }
+
+    public static void RemoveEntityAddedListener(EventHandler<List<Entity>> handler)
+    {
+        entityAdded -= handler;
+    }
+
+    public static void AddEntityRemovedListener(EventHandler<List<Entity>> handler)
+    {
+        entityRemoved += handler;
+    }
+
+    public static void RemoveEntityRemovedListener(EventHandler<List<Entity>> handler)
+    {
+        entityRemoved -= handler;
+    }
+
+    public static void ClearEntityAddedListeners()
+    {
+        entityAdded = null;
+    }
+
+    public static void ClearEntityRemovedListeners()
+    {
+        entityRemoved = null;
+    }
 }
 
-public class Player : Entity
+public class Player : Entity, Tank
 {
-    public TankData TankData;
-    public float ShellSpeed = 70;
+    public RectCollider Collider {get; set;}
+    public Barrel Barrel {get; set;}
+    public Vector2 Direction {get; set;}
+    public TankDir TankDir {get; set;}
+    public float Speed {get; set;}
+    public float ShellSpeed {get; set;} = 70;
 }
 
-public class Enemy : Entity
+public class Enemy : Entity, Tank
 {
-    public TankData TankData;
     public float EnemyShootTime = 0f;
     public int MinFollowDistance = 65;
     public float ShootDelta = 1f;
-    public float ShellSpeed = 70;
+
+    public RectCollider Collider {get; set;}
+    public Barrel Barrel {get; set;}
+    public Vector2 Direction {get; set;}
+    public TankDir TankDir {get; set;}
+    public float Speed {get; set;}
+    public float ShellSpeed {get; set;} = 70;
 }
 
 public class Shell : Entity
@@ -121,16 +195,6 @@ public class Shell : Entity
     public float Direction;
     public float KillTime = 0f;
 }
-
-public class TankData
-{
-    public RectCollider Collider;
-    public Barrel Barrel;
-    public Vector2 Direction;
-    public TankDir TankDir;
-    public float Speed;
-}
-
 public class Barrel : Entity
 {
     public Vector2 Direction;
@@ -138,3 +202,13 @@ public class Barrel : Entity
 
 public enum TankDir 
 {UpLeft, Up, UpRight, Right, DownRight, Down, DownLeft, Left}
+
+public interface Tank
+{
+    public RectCollider Collider {get; set;}
+    public Barrel Barrel {get; set;}
+    public Vector2 Direction {get; set;}
+    public TankDir TankDir {get; set;}
+    public float Speed {get; set;}
+    public float ShellSpeed {get; set;}
+}
