@@ -15,6 +15,7 @@ public static class Global
 
     public static GraphicsDeviceManager Graphics {get; private set;}
     public static SpriteBatch Batch {get; private set;}
+    public static Random Rng {get; private set;}
 
     public static MouseState M_State {get; private set;}
     public static MouseState LastMouse {get; private set;}
@@ -29,6 +30,7 @@ public static class Global
         Batch = batch;
         PixelTexture = new Texture2D(graphics.GraphicsDevice, 1, 1);
         PixelTexture.SetData(new[] { Color.White });
+        Rng = new Random();
     }
 
     public static void Unload()

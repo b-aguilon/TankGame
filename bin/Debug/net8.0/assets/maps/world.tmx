@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="13" nextobjectid="51">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="13" nextobjectid="61">
  <tileset firstgid="1" source="world-tileset.tsx"/>
  <group id="11" name="Visuals">
   <layer id="1" name="Ground" width="50" height="50">
@@ -426,8 +426,20 @@
   <object id="49" x="688" y="112" width="16" height="176"/>
   <object id="50" x="704" y="144" width="16" height="112"/>
  </objectgroup>
- <objectgroup id="12" name="PointsOfInterest">
-  <object id="8" name="PlayerSpawn" x="425" y="343.5">
+ <objectgroup id="12" name="Spawn">
+  <object id="8" name="Moving" x="425" y="343.5">
+   <point/>
+  </object>
+  <object id="57" name="Moving" x="267.725" y="322.363">
+   <point/>
+  </object>
+  <object id="58" name="Stationary" x="713.023" y="327.827">
+   <point/>
+  </object>
+  <object id="59" name="Fast" x="456.226" y="466.47">
+   <point/>
+  </object>
+  <object id="60" name="Player" x="456.226" y="596.235">
    <point/>
   </object>
  </objectgroup>

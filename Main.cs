@@ -13,7 +13,7 @@ public class MainGame : Game
 {
     private GraphicsDeviceManager graphics;
     private SpriteBatch spriteBatch;
-    private GameState currState;
+    private GameScreen currState;
 
     public MainGame()
     {
@@ -35,12 +35,13 @@ public class MainGame : Game
     {
         spriteBatch = new SpriteBatch(GraphicsDevice);
         Global.Load(graphics, spriteBatch);
-        changeState(new Script.MainState());
+        changeState(new Script.MainScreen());
     }
 
     protected override void UnloadContent()
     {
         Global.Unload();
+        base.UnloadContent();
     }
 
     protected override void Update(GameTime gt)
@@ -52,7 +53,6 @@ public class MainGame : Game
         Global.Update(dt);
         currState.Update();
         Renderer.Get().Update();
-
         base.Update(gt);
     }
 
@@ -62,7 +62,7 @@ public class MainGame : Game
         base.Draw(gt);
     }
 
-    private void changeState(GameState next)
+    private void changeState(GameScreen next)
     {
         currState?.Unload();
         currState = next;
