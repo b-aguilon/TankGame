@@ -1,8 +1,6 @@
 using Engine;
 using Engine.Collisions;
 
-using System.Collections.Generic;
-
 namespace Script;
 
 public class GameEntities
@@ -118,49 +116,6 @@ public class GameEntities
     public static void TriggerEntityOnShoot(Entity ent)
     {
         tankShot?.Invoke(ent, EventArgs.Empty);
-    }
-
-    private static event EventHandler<List<Entity>> entityAdded;
-    private static event EventHandler<List<Entity>> entityRemoved;
-
-    public static void TriggerAddEntity(object entity, List<Entity> entities)
-    {
-        entityAdded?.Invoke(entity, entities);
-    }
-
-    public static void TriggerRemoveEntity(object entity, List<Entity> entities)
-    {
-        entityRemoved?.Invoke(entity, entities);
-    }
-
-    public static void AddEntityAddedListener(EventHandler<List<Entity>> handler)
-    {
-        entityAdded += handler;
-    }
-
-    public static void RemoveEntityAddedListener(EventHandler<List<Entity>> handler)
-    {
-        entityAdded -= handler;
-    }
-
-    public static void AddEntityRemovedListener(EventHandler<List<Entity>> handler)
-    {
-        entityRemoved += handler;
-    }
-
-    public static void RemoveEntityRemovedListener(EventHandler<List<Entity>> handler)
-    {
-        entityRemoved -= handler;
-    }
-
-    public static void ClearEntityAddedListeners()
-    {
-        entityAdded = null;
-    }
-
-    public static void ClearEntityRemovedListeners()
-    {
-        entityRemoved = null;
     }
 }
 
