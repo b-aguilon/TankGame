@@ -5,11 +5,6 @@ namespace Script;
 
 public static class PlayerController
 {
-    public static void LoadPlayer(Player player, Vector2 pos)
-    {
-        
-    }
-
     public static void UpdatePlayer(Player player)
     {
         var kState = Global.K_State;

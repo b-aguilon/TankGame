@@ -7,14 +7,15 @@ namespace Script;
 
 public static class ShellController
 {
-    /*public static void UpdateShell(Shell shell, List<Entity> entities)
+    public static float KillTimeMax {get; set;} = 10f;
+
+    public static void UpdateShell(Shell shell, List<RectCollider> colliders)
     {
-        entities.sh
         var dt = Global.DELTA_TIME;
         shell.Position += new Vector2(MathF.Cos(shell.Direction), MathF.Sin(shell.Direction)) * shell.Speed * dt;
         shell.KillTime += dt;
 
-        foreach (var ent in entities.Where
+        foreach (var ent in Entities.GetEntities().Where
         (
             e => e is Tank || e is Shell && e != shell.ShotBy
         )
@@ -27,22 +28,22 @@ public static class ShellController
                     hitBox = new RectCollider(new(s.Position.X, s.Position.Y), new(s.Width, s.Height));
                     if (s != shell && RectCollider.ContainsPoint(hitBox, shell.Position))
                     {
-                        entities.Remove(shell);
-                        entities.Remove(s);
+                        Entities.TriggerRemoveEntity(shell);
+                        Entities.TriggerRemoveEntity(s);
                     }
                     break;
                 case Player p:
                     hitBox = p.Collider;
                     if (RectCollider.ContainsPoint(hitBox, shell.Position))
                     {
-                        removePlayer(p);
+                        Entities.TriggerRemoveEntity(p);
                     }
                     break;
                 case Enemy e:
                     hitBox = e.Collider;
                     if (shell.ShotBy is Player && RectCollider.ContainsPoint(hitBox, shell.Position))
                     {
-                        removeEnemy(e);
+                        Entities.TriggerRemoveEntity(e);
                     }
                     break;
                 default:
@@ -54,13 +55,13 @@ public static class ShellController
         {
             if (RectCollider.ContainsPoint(collider, shell.Position))
             {
-                entities.Remove(shell);
+                Entities.TriggerRemoveEntity(shell);
             }
         }
 
-        if (shell.KillTime > SHELL_KILL_TIME_MAX)
+        if (shell.KillTime > KillTimeMax)
         {
-            entities.Remove(shell);
+            Entities.TriggerRemoveEntity(shell);
         }
-    }*/
+    }
 }

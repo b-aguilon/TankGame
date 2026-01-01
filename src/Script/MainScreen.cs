@@ -1,9 +1,10 @@
+using DotTiled;
+
 using Engine;
+using Engine.Collisions;
 using Engine.Graphics;
 using Engine.Tilemap;
-using Engine.Collisions;
 
-using DotTiled;
 using System.Collections.Generic;
 
 namespace Script;
@@ -11,7 +12,6 @@ namespace Script;
 class MainScreen : GameScreen
 {
     private const int BARREL_LENGTH = 15;
-    private const float SHELL_KILL_TIME_MAX = 10f;
 
     private Player player;
     private MapData mapData;
@@ -103,8 +103,6 @@ class MainScreen : GameScreen
 
     public override void Update()
     {
-        var dt = Global.DELTA_TIME;
-
         foreach (var ent in Entities.GetEntities().ToArray())
         {
             switch (ent)
@@ -113,7 +111,7 @@ class MainScreen : GameScreen
                     PlayerController.UpdatePlayer(player);
                     break;
                 case Shell shell:
-                    updateShell(shell, dt);
+                    ShellController.UpdateShell(shell, colliders);
                     break;
                 case Enemy enemy:
                     EnemyController.UpdateEnemy(enemy, player.Position);
@@ -129,61 +127,6 @@ class MainScreen : GameScreen
         }
 
         Renderer.Get().CameraFollow(player.Position);
-    }
-
-    private void updateShell(Shell shell, float dt)
-    {
-        shell.Position += new Vector2(MathF.Cos(shell.Direction), MathF.Sin(shell.Direction)) * shell.Speed * dt;
-        shell.KillTime += dt;
-
-        foreach (var ent in Entities.GetEntities().Where
-        (
-            e => e is Enemy || e is Player || e is Shell && e != shell.ShotBy
-        )
-        .ToArray())
-        {
-            var hitBox = new RectCollider();
-            switch (ent)
-            {
-                case Shell s:
-                    hitBox = new RectCollider(new(s.Position.X, s.Position.Y), new(s.Width, s.Height));
-                    if (s != shell && RectCollider.ContainsPoint(hitBox, shell.Position))
-                    {
-                        Entities.TriggerRemoveEntity(shell);
-                        Entities.TriggerRemoveEntity(s);
-                    }
-                    break;
-                case Player p:
-                    hitBox = p.Collider;
-                    if (RectCollider.ContainsPoint(hitBox, shell.Position))
-                    {
-                        Entities.TriggerRemoveEntity(p);
-                    }
-                    break;
-                case Enemy e:
-                    hitBox = e.Collider;
-                    if (shell.ShotBy is Player && RectCollider.ContainsPoint(hitBox, shell.Position))
-                    {
-                        Entities.TriggerRemoveEntity(e);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        foreach (var collider in colliders)
-        {
-            if (RectCollider.ContainsPoint(collider, shell.Position))
-            {
-                Entities.TriggerRemoveEntity(shell);
-            }
-        }
-
-        if (shell.KillTime > SHELL_KILL_TIME_MAX)
-        {
-            Entities.TriggerRemoveEntity(shell);
-        }
     }
 
     public override void Draw()

@@ -1,8 +1,9 @@
-﻿global using System;
-global using System.Linq;
-global using Microsoft.Xna.Framework;
+﻿global using Microsoft.Xna.Framework;
 global using Microsoft.Xna.Framework.Graphics;
 global using Microsoft.Xna.Framework.Input;
+
+global using System;
+global using System.Linq;
 
 using Engine;
 using Engine.Graphics;
