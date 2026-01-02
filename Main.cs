@@ -14,7 +14,7 @@ public class MainGame : Game
 {
     private GraphicsDeviceManager graphics;
     private SpriteBatch spriteBatch;
-    private GameScreen currState;
+    private GameScreen currScreen;
 
     public MainGame()
     {
@@ -36,7 +36,7 @@ public class MainGame : Game
     {
         spriteBatch = new SpriteBatch(GraphicsDevice);
         Global.Load(graphics, spriteBatch);
-        changeState(new Script.MainScreen());
+        changeScreen(new Script.MainScreen());
     }
 
     protected override void UnloadContent()
@@ -52,22 +52,22 @@ public class MainGame : Game
         
         var dt = (float)gt.ElapsedGameTime.TotalSeconds;
         Global.Update(dt);
-        currState.Update();
+        currScreen.Update();
         Renderer.Get().Update();
         base.Update(gt);
     }
 
     protected override void Draw(GameTime gt)
     {
-        currState.Draw();
+        currScreen.Draw();
         base.Draw(gt);
     }
 
-    private void changeState(GameScreen next)
+    private void changeScreen(GameScreen next)
     {
-        currState?.Unload();
-        currState = next;
-        currState.Load();
-        currState.OnStateChanged += (sender, state) => changeState(state);
+        currScreen?.Unload();
+        currScreen = next;
+        currScreen.Load();
+        currScreen.OnScreenChanged += (sender, state) => changeScreen(state);
     }
 }

@@ -6,11 +6,11 @@ namespace Engine;
 
 abstract class GameScreen
 {
-    public event EventHandler<GameScreen> OnStateChanged;
+    public event EventHandler<GameScreen> OnScreenChanged;
 
     public GameScreen() {}
 
-    protected void changeState(GameScreen next) => OnStateChanged?.Invoke(this, next);
+    protected void changeScreen(GameScreen next) => OnScreenChanged?.Invoke(this, next);
 
     private void onEntityAdd(object entity, List<Entity> entities)
     {
@@ -55,6 +55,7 @@ abstract class GameScreen
         {
             ent.Texture.Dispose();
         }
+        Entities.ClearEntities();
         unloadGameScreen();
     }
 

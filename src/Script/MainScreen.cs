@@ -48,7 +48,7 @@ class MainScreen : GameScreen
                     {
                         throw new Exception("Muliple player spawns");
                     }
-                    this.player = GameEntities.MakePlayer(new(spawn.X, spawn.Y), speed:60);
+                    this.player = GameEntities.MakePlayer(new(spawn.X, spawn.Y));
                     Entities.TriggerAddEntity(player);
                     playerSpawned = true;
                     break;
@@ -103,6 +103,11 @@ class MainScreen : GameScreen
 
     public override void Update()
     {
+        if (Global.K_State.IsKeyDown(Keys.Enter) && Global.LastKeys.IsKeyUp(Keys.Enter))
+        {
+            changeScreen(new MainScreen());
+        }
+
         foreach (var ent in Entities.GetEntities().ToArray())
         {
             switch (ent)

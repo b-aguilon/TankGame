@@ -8,7 +8,19 @@ public class GameEntities
     private const int TANK_DIMENSIONS = 17;
     private const int BARREL_ROT_POINT = 3;
 
-    public static Player MakePlayer(Vector2 pos, float speed)
+    private const int PLAYER_SPEED = 60;
+    private const int PLAYER_SHELL_SPEED = 110;
+
+    private const int ENEMY_NORMAL_SPEED = 45;
+    private const int ENEMY_FAST_SPEED = 180;
+
+    private const int ENEMY_STATIONARY_SHELL_SPEED = 280;
+    private const int ENEMY_NORMAL_SHELL_SPEED = 110;
+    private const int ENEMY_FAST_SHELL_SPEED = 250;
+
+    private const int ENEMY_MIN_FOLLOW_DISTANCE = 65;
+
+    public static Player MakePlayer(Vector2 pos)
     {
         var player = new Player();
         player.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/tankPlayer.png");
@@ -19,30 +31,54 @@ public class GameEntities
         player.Position = pos;
         player.RotationPivot = new(player.Texture.Width / 2f, player.Texture.Height / 2f);
         player.DrawOffset = player.RotationPivot;
-        player.ShellSpeed = 110;
+        player.ShellSpeed = PLAYER_SHELL_SPEED;
         player.Collider = new RectCollider(player.Position - player.DrawOffset / 2, new(player.Width, player.Height));
         player.Direction = Vector2.UnitX;
         player.TankDir = (TankDir)(-1);
         player.Barrel = MakeTankBarrel(player.Position, BARREL_ROT_POINT);
         player.Barrel.LayerDepth = 0.45f;
-        player.Speed = speed;
+        player.Speed = PLAYER_SPEED;
 
         return player;
     }
 
     public static Enemy MakeEnemyStationary(Vector2 pos)
     {
-        return MakeEnemy(pos, speed:0, minFollowDistance:75, shellSpeed:110, "tank.png", "tankBarrelStationary.png");
+        return MakeEnemy
+        (
+            pos, 
+            speed:0, 
+            minFollowDistance:ENEMY_MIN_FOLLOW_DISTANCE, 
+            shellSpeed:ENEMY_STATIONARY_SHELL_SPEED, 
+            "tank.png", 
+            "tankBarrelStationary.png"
+        );
     }
 
     public static Enemy MakeEnemyMoving(Vector2 pos)
     {
-        return MakeEnemy(pos, speed:45, minFollowDistance:65, shellSpeed:110, "stationaryTank.png", "stationaryBarrel.png");
+        return MakeEnemy
+        (
+            pos, 
+            speed:ENEMY_NORMAL_SPEED, 
+            minFollowDistance:ENEMY_MIN_FOLLOW_DISTANCE, 
+            shellSpeed:ENEMY_NORMAL_SHELL_SPEED, 
+            "stationaryTank.png", 
+            "stationaryBarrel.png"
+        );
     }
 
     public static Enemy MakeEnemyFast(Vector2 pos)
     {
-        return MakeEnemy(pos, speed:120, minFollowDistance:50, shellSpeed:200, "tankFast.png", "tankFastBarrel.png");
+        return MakeEnemy
+        (
+            pos, 
+            speed:ENEMY_FAST_SPEED, 
+            minFollowDistance:ENEMY_MIN_FOLLOW_DISTANCE, 
+            shellSpeed:ENEMY_FAST_SHELL_SPEED, 
+            "tankFast.png", 
+            "tankFastBarrel.png"
+        );
     }
 
     private static Enemy MakeEnemy(Vector2 pos, float speed, int minFollowDistance, float shellSpeed, string textureFile, string barrelFile)
