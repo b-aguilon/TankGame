@@ -119,7 +119,7 @@ public class GameEntities
     }
 }
 
-public class Player : Entity, Tank
+public class Player : Entity, TankData
 {
     public RectCollider Collider {get; set;}
     public Barrel Barrel {get; set;}
@@ -129,7 +129,7 @@ public class Player : Entity, Tank
     public float ShellSpeed {get; set;} = 70;
 }
 
-public class Enemy : Entity, Tank
+public class Enemy : Entity, TankData
 {
     public float EnemyShootTime = 0f;
     public int MinFollowDistance = 65;
@@ -158,7 +158,7 @@ public class Barrel : Entity
 public enum TankDir 
 {UpLeft, Up, UpRight, Right, DownRight, Down, DownLeft, Left}
 
-public interface Tank
+public interface TankData
 {
     public RectCollider Collider {get; set;}
     public Barrel Barrel {get; set;}

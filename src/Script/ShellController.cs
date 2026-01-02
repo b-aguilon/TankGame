@@ -17,7 +17,7 @@ public static class ShellController
 
         foreach (var ent in Entities.GetEntities().Where
         (
-            e => e is Tank || e is Shell && e != shell.ShotBy
+            e => e is TankData || e is Shell && e != shell.ShotBy
         )
         .ToArray())
         {

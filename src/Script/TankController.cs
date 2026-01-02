@@ -10,14 +10,14 @@ public static class TankController
     private const float TANK_ROT_SPEED = MathHelper.Pi / 80f;
     private const float EPSILON = MathHelper.Pi / 30f;
 
-    public static void UpdateTank(Entity ent, Tank tankData, List<RectCollider> colliders)
+    public static void UpdateTank(Entity ent, TankData tankData, List<RectCollider> colliders)
     {
         changeTankDirection(ent, tankData);
         handleTankCollisions(ent, tankData, colliders);
         updateTankBarrel(ent, tankData);
     }
 
-    private static void changeTankDirection(Entity ent, Tank tankData)
+    private static void changeTankDirection(Entity ent, TankData tankData)
     {
         const float PI = MathHelper.Pi;
         bool moving = true;
@@ -104,7 +104,7 @@ public static class TankController
         }
     }
 
-    private static void handleTankCollisions(Entity ent, Tank tankData, List<RectCollider> colliders)
+    private static void handleTankCollisions(Entity ent, TankData tankData, List<RectCollider> colliders)
     {
         tankData.Collider.Velocity = tankData.Direction * tankData.Speed;
         tankData.Collider.Position = ent.Position - ent.DrawOffset / 2;
@@ -115,7 +115,7 @@ public static class TankController
         tankData.Collider.Position = ent.Position - ent.DrawOffset / 2;
     }
 
-    private static void updateTankBarrel(Entity ent, Tank tankData)
+    private static void updateTankBarrel(Entity ent, TankData tankData)
     {
         tankData.Barrel.Rotation = MathF.Atan2(tankData.Barrel.Direction.Y, tankData.Barrel.Direction.X);
         tankData.Barrel.Position = ent.Position;

@@ -77,7 +77,7 @@ class MainScreen : GameScreen
         if (sender is not Entity)
             throw new Exception("Only entities can shoot");
 
-        if (sender is Tank tank)
+        if (sender is TankData tank)
         {
             shell = GameEntities.MakeShell(entity.Position + tank.Barrel.Direction * BARREL_LENGTH, tank.Barrel.Rotation, tank.ShellSpeed);
             shell.ShotBy = entity;
@@ -87,7 +87,7 @@ class MainScreen : GameScreen
 
     protected override void entityAddedEffects(Entity entity)
     {
-        if (entity is Tank tank)
+        if (entity is TankData tank)
         {
             Entities.TriggerAddEntity(tank.Barrel);
         }
@@ -95,7 +95,7 @@ class MainScreen : GameScreen
 
     protected override void entityRemovedEffects(Entity entity)
     {
-        if (entity is Tank tank)
+        if (entity is TankData tank)
         {
             Entities.TriggerRemoveEntity(tank.Barrel);
         }
@@ -120,7 +120,7 @@ class MainScreen : GameScreen
                     break;
             }
 
-            if (ent is Tank tank)
+            if (ent is TankData tank)
             {
                 TankController.UpdateTank(ent, tank, colliders);
             }
