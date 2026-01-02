@@ -8,15 +8,15 @@ public class GameEntities
     private const int TANK_DIMENSIONS = 17;
     private const int BARREL_ROT_POINT = 3;
 
-    private const int PLAYER_SPEED = 60;
-    private const int PLAYER_SHELL_SPEED = 110;
+    private const int PLAYER_SPEED = 180;
+    private const int PLAYER_SHELL_SPEED = 240;
 
     private const int ENEMY_NORMAL_SPEED = 45;
     private const int ENEMY_FAST_SPEED = 180;
 
     private const int ENEMY_STATIONARY_SHELL_SPEED = 280;
     private const int ENEMY_NORMAL_SHELL_SPEED = 110;
-    private const int ENEMY_FAST_SHELL_SPEED = 250;
+    private const int ENEMY_FAST_SHELL_SPEED = 240;
 
     private const int ENEMY_MIN_FOLLOW_DISTANCE = 65;
 

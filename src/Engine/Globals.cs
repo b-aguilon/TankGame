@@ -3,8 +3,8 @@ namespace Engine;
 public static class Global
 {
     public const int DEFAULT_FPS = 60;
-    public const int RESOLUTION_X = 320;
-    public const int RESOLUTION_Y = 180;
+    public const int RESOLUTION_X = 480;
+    public const int RESOLUTION_Y = 270;
     public const int DEFAULT_WINDOW_RESOLUTION_X = 1920;
     public const int DEFAULT_WINDOW_RESOLUTION_Y = 1080;
     public const string ASSETS_PATH = @"assets/";
