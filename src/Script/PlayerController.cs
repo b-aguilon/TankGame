@@ -48,9 +48,11 @@ public static class PlayerController
             player.TankDir = (TankDir)(-1);
         }
 
-        if (Global.LeftMouseClicked())
+        player.ShootTime += Global.DELTA_TIME;
+        if (Global.LeftMouseClicked() && player.ShootDelta <= player.ShootTime)
         {
             GameEntities.TriggerEntityOnShoot(player);
+            player.ShootTime = 0f;
         }
     }
 }

@@ -8,17 +8,27 @@ public class GameEntities
     private const int TANK_DIMENSIONS = 17;
     private const int BARREL_ROT_POINT = 3;
 
-    private const int PLAYER_SPEED = 180;
-    private const int PLAYER_SHELL_SPEED = 240;
+    private const int PLAYER_SPEED = 75;
+    private const int PLAYER_SHELL_SPEED = 140;
+    private const float PLAYER_FIRERATE = 0.2f;
+    private const float PLAYER_ROT_SPEED = MathHelper.Pi / 70f;
 
-    private const int ENEMY_NORMAL_SPEED = 45;
-    private const int ENEMY_FAST_SPEED = 180;
+    private const int ENEMY_NORMAL_SPEED = 55;
+    private const int ENEMY_NORMAL_SHELL_SPEED = 140;
 
-    private const int ENEMY_STATIONARY_SHELL_SPEED = 280;
-    private const int ENEMY_NORMAL_SHELL_SPEED = 110;
+    private const int ENEMY_FAST_SPEED = 150;
     private const int ENEMY_FAST_SHELL_SPEED = 240;
 
+    private const int ENEMY_STATIONARY_SHELL_SPEED = 300;
+
     private const int ENEMY_MIN_FOLLOW_DISTANCE = 65;
+
+    private const int ENEMY_FOLLOW_DISTANCE_RANGE = 40;
+    private const int ENEMY_SPEED_RANGE = 50;
+    private const float ENEMY_MAX_FIRERATE = 1.25f;
+    private const float ENEMY_MIN_FIRERATE = 0.75f;
+    private const float ENEMY_MAX_ROT_SPEED = MathHelper.Pi / 50f;
+    private const float ENEMY_MIN_ROT_SPEED = MathHelper.Pi / 110f;
 
     public static Player MakePlayer(Vector2 pos)
     {
@@ -38,6 +48,8 @@ public class GameEntities
         player.Barrel = MakeTankBarrel(player.Position, BARREL_ROT_POINT);
         player.Barrel.LayerDepth = 0.45f;
         player.Speed = PLAYER_SPEED;
+        player.RotationSpeed = PLAYER_ROT_SPEED;
+        player.ShootDelta = PLAYER_FIRERATE;
 
         return player;
     }
@@ -81,8 +93,10 @@ public class GameEntities
         );
     }
 
-    private static Enemy MakeEnemy(Vector2 pos, float speed, int minFollowDistance, float shellSpeed, string textureFile, string barrelFile)
+    private static Enemy MakeEnemy(Vector2 pos, int speed, int minFollowDistance, int shellSpeed, string textureFile, string barrelFile)
     {
+        var random = Global.Rng;
+
         var enemy = new Enemy();
         enemy.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/{textureFile}");
         enemy.Source = new Rectangle(0, 0, enemy.Texture.Width, enemy.Texture.Height);
@@ -99,7 +113,14 @@ public class GameEntities
         enemy.Barrel.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/{barrelFile}");
         enemy.Barrel.LayerDepth = 0.1f;
         enemy.MinFollowDistance = minFollowDistance;
-        enemy.Speed = speed;
+
+        if (speed != 0)
+            enemy.Speed = speed + random.Next(-ENEMY_SPEED_RANGE / 2, ENEMY_SPEED_RANGE / 2) + 1;
+        else
+            enemy.Speed = 0;
+        enemy.RotationSpeed = (float)random.NextDouble() * (ENEMY_MAX_ROT_SPEED - ENEMY_MIN_ROT_SPEED) + ENEMY_MIN_ROT_SPEED;
+        enemy.ShootDelta = (float)random.NextDouble() * (ENEMY_MAX_FIRERATE - ENEMY_MIN_FIRERATE) + ENEMY_MIN_FIRERATE;
+        enemy.MinFollowDistance = ENEMY_MIN_FOLLOW_DISTANCE + random.Next(-ENEMY_FOLLOW_DISTANCE_RANGE / 2, ENEMY_FOLLOW_DISTANCE_RANGE / 2) + 1;
         
         return enemy;
     }
@@ -157,12 +178,16 @@ public class GameEntities
 
 public class Player : Entity, TankData
 {
+    public float ShootDelta = 0.1f;
+    public float ShootTime = 0f;
+
     public RectCollider Collider {get; set;}
     public Barrel Barrel {get; set;}
     public Vector2 Direction {get; set;}
     public TankDir TankDir {get; set;}
     public float Speed {get; set;}
     public float ShellSpeed {get; set;} = 70;
+    public float RotationSpeed {get; set;}
 }
 
 public class Enemy : Entity, TankData
@@ -177,6 +202,7 @@ public class Enemy : Entity, TankData
     public TankDir TankDir {get; set;}
     public float Speed {get; set;}
     public float ShellSpeed {get; set;} = 70;
+    public float RotationSpeed {get; set;}
 }
 
 public class Shell : Entity
@@ -202,4 +228,5 @@ public interface TankData
     public TankDir TankDir {get; set;}
     public float Speed {get; set;}
     public float ShellSpeed {get; set;}
+    public float RotationSpeed {get; set;}
 }

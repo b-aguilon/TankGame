@@ -7,7 +7,6 @@ namespace Script;
 
 public static class TankController
 {
-    private const float TANK_ROT_SPEED = MathHelper.Pi / 80f;
     private const float EPSILON = MathHelper.Pi / 30f;
 
     public static void UpdateTank(Entity ent, TankData tankData, List<RectCollider> colliders)
@@ -25,28 +24,28 @@ public static class TankController
         switch (tankData.TankDir)
         {
             case TankDir.Left:
-                changeTankRotation(ent, PI);
+                changeTankRotation(ent, tankData.RotationSpeed, PI);
                 break;
             case TankDir.Right:
-                changeTankRotation(ent, 0f);
+                changeTankRotation(ent, tankData.RotationSpeed, 0f);
                 break;
             case TankDir.Up:
-                changeTankRotation(ent, 3*PI/2f);
+                changeTankRotation(ent, tankData.RotationSpeed, 3*PI/2f);
                 break;
             case TankDir.Down:
-                changeTankRotation(ent, PI/2f);
+                changeTankRotation(ent, tankData.RotationSpeed, PI/2f);
                 break;
             case TankDir.UpLeft:
-                changeTankRotation(ent, 5*PI/4f);
+                changeTankRotation(ent, tankData.RotationSpeed, 5*PI/4f);
                 break;
             case TankDir.UpRight:
-                changeTankRotation(ent, 7*PI/4f);
+                changeTankRotation(ent, tankData.RotationSpeed, 7*PI/4f);
                 break;
             case TankDir.DownLeft:
-                changeTankRotation(ent, 3*PI/4f);
+                changeTankRotation(ent, tankData.RotationSpeed, 3*PI/4f);
                 break;
             case TankDir.DownRight:
-                changeTankRotation(ent, PI/4f);
+                changeTankRotation(ent, tankData.RotationSpeed, PI/4f);
                 break;
             default:
                 moving = false;
@@ -63,7 +62,7 @@ public static class TankController
         }
     }
     
-    private static void changeTankRotation(Entity tank, float targetRotation)
+    private static void changeTankRotation(Entity tank, float rotationSpeed, float targetRotation)
     {
         var canFlip180 = (float rotation) =>
         {
@@ -85,16 +84,16 @@ public static class TankController
         {
             var adjustedMaxRotationBounds = rotationPlusPiWrap;
             if (tank.Rotation > targetRotation || tank.Rotation < adjustedMaxRotationBounds)
-                tank.Rotation -= TANK_ROT_SPEED;
+                tank.Rotation -= rotationSpeed;
             else
-                tank.Rotation += TANK_ROT_SPEED;
+                tank.Rotation += rotationSpeed;
         }
         else
         {
             if (tank.Rotation > targetRotation && tank.Rotation < targetRotation + MathHelper.Pi)
-                tank.Rotation -= TANK_ROT_SPEED;
+                tank.Rotation -= rotationSpeed;
             else
-                tank.Rotation += TANK_ROT_SPEED;
+                tank.Rotation += rotationSpeed;
         }
         
         tank.Rotation = Global.WrapRotation(tank.Rotation);

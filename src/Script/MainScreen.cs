@@ -12,6 +12,7 @@ namespace Script;
 class MainScreen : GameScreen
 {
     private const int BARREL_LENGTH = 15;
+    private const int CAMERA_LAG = 15;
 
     private Player player;
     private MapData mapData;
@@ -131,7 +132,7 @@ class MainScreen : GameScreen
             }
         }
 
-        Renderer.Get().CameraFollow(player.Position);
+        Renderer.Get().CameraFollow(player.Position, CAMERA_LAG);
     }
 
     public override void Draw()
