@@ -20,7 +20,7 @@ public class GameEntities
     private const int ENEMY_NORMAL_SHELL_SPEED = 120;
 
     private const int ENEMY_FAST_SPEED = 180;
-    private const int ENEMY_FAST_SHELL_SPEED = 210;
+    private const int ENEMY_FAST_SHELL_SPEED = 220;
 
     private const int ENEMY_STATIONARY_SHELL_SPEED = 300;
 
