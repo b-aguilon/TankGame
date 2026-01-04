@@ -9,7 +9,7 @@ public static class TankController
 {
     private const float EPSILON = MathHelper.Pi / 18f;
 
-    public static void UpdateTank(Entity ent, TankData tankData, List<RectCollider> colliders)
+    public static void UpdateTank(Entity ent, TankData tankData, IEnumerable<RectCollider> colliders)
     {
         changeTankDirection(ent, tankData);
         handleTankCollisions(ent, tankData, colliders);
@@ -103,7 +103,7 @@ public static class TankController
         }
     }
 
-    private static void handleTankCollisions(Entity ent, TankData tankData, List<RectCollider> colliders)
+    private static void handleTankCollisions(Entity ent, TankData tankData, IEnumerable<RectCollider> colliders)
     {
         tankData.Collider.Velocity = tankData.Direction * tankData.Speed;
         tankData.Collider.Position = ent.Position - ent.DrawOffset / 2;

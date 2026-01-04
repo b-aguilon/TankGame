@@ -7,61 +7,88 @@ namespace Script;
 
 public static class ShellController
 {
-    public static float KillTimeMax {get; set;} = 10f;
+    private const float KILL_TIME_MAX = 15f;
 
-    public static void UpdateShell(Shell shell, List<RectCollider> colliders)
+    public static void UpdateShell(Shell shell, IEnumerable<RectCollider> colliders)
     {
         var dt = Global.DELTA_TIME;
         shell.Position += new Vector2(MathF.Cos(shell.Direction), MathF.Sin(shell.Direction)) * shell.Speed * dt;
         shell.KillTime += dt;
+        if (shell.KillTime > KILL_TIME_MAX)
+        {
+            Entities.TriggerRemoveEntity(shell);
+        }
 
-        foreach (var ent in Entities.GetEntities().Where
+        foreach (var entity in Entities.GetEntities().Where
         (
             e => e is TankData || e is Shell && e != shell.ShotBy
         )
         .ToArray())
         {
-            var hitBox = new RectCollider();
-            switch (ent)
-            {
-                case Shell s:
-                    hitBox = new RectCollider(new(s.Position.X, s.Position.Y), new(s.Width, s.Height));
-                    if (s != shell && RectCollider.ContainsPoint(hitBox, shell.Position))
-                    {
-                        Entities.TriggerRemoveEntity(shell);
-                        Entities.TriggerRemoveEntity(s);
-                    }
-                    break;
-                case Player p:
-                    hitBox = p.Collider;
-                    if (RectCollider.ContainsPoint(hitBox, shell.Position))
-                    {
-                        Entities.TriggerRemoveEntity(p);
-                    }
-                    break;
-                case Enemy e:
-                    hitBox = e.Collider;
-                    if (shell.ShotBy is Player && RectCollider.ContainsPoint(hitBox, shell.Position))
-                    {
-                        Entities.TriggerRemoveEntity(e);
-                    }
-                    break;
-                default:
-                    break;
-            }
+            collideWithEntities(shell, entity);
         }
 
+        collideWithColliders(shell, colliders);
+    }
+
+    private static void collideWithEntities(Shell shell, Entity entity)
+    {
+        RectCollider otherHitbox;
+        var hitBox = new RectCollider
+        (
+            new(shell.Position.X, shell.Position.Y), 
+            new(shell.Width, shell.Height)
+        );
+        switch (entity)
+        {
+            case Shell otherShell:
+                otherHitbox = new RectCollider
+                (
+                    new(otherShell.Position.X, otherShell.Position.Y), 
+                    new(otherShell.Width, otherShell.Height)
+                );
+                if (RectCollider.Intersects(hitBox, otherHitbox) && otherShell != shell)
+                {
+                    Entities.TriggerRemoveEntity(shell);
+                    Entities.TriggerRemoveEntity(otherShell);
+                }
+                break;
+            case Player player:
+                otherHitbox = player.Collider;
+                if (RectCollider.Intersects(hitBox, otherHitbox))
+                {
+                    Entities.TriggerRemoveEntity(player);
+                }
+                break;
+            case Enemy enemy:
+                otherHitbox = enemy.Collider;
+                var collidersIntersect = RectCollider.Intersects(hitBox, otherHitbox);
+                if (!collidersIntersect)
+                {
+                    return;
+                }
+                if (shell.ShotBy is Player)
+                {
+                    Entities.TriggerRemoveEntity(enemy);
+                }
+                else if (shell.ShotBy is Enemy)
+                {
+                    Entities.TriggerRemoveEntity(shell);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private static void collideWithColliders(Shell shell, IEnumerable<RectCollider> colliders)
+    {
         foreach (var collider in colliders)
         {
             if (RectCollider.ContainsPoint(collider, shell.Position))
             {
                 Entities.TriggerRemoveEntity(shell);
             }
-        }
-
-        if (shell.KillTime > KillTimeMax)
-        {
-            Entities.TriggerRemoveEntity(shell);
         }
     }
 }

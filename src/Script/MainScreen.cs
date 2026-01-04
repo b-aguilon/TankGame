@@ -13,7 +13,9 @@ class MainScreen : GameScreen
 {
     private const int BARREL_LENGTH = 15;
     private const int CAMERA_LAG = 15;
-    private const int CAM_MAX_OFFSET = 100;
+    private const int CAM_MAX_OFFSET = 110;
+
+    private bool playerDead = false;
 
     private Player player;
     private MapData mapData;
@@ -120,13 +122,9 @@ class MainScreen : GameScreen
 
     protected override void entityAddedEffects(Entity entity)
     {
-        switch (entity)
+        if (entity is TankData tank)
         {
-            case TankData tank:
-                Entities.TriggerAddEntity(tank.Barrel);
-                break;
-            default:
-                break;
+            Entities.TriggerAddEntity(tank.Barrel);
         }
     }
 
@@ -136,12 +134,19 @@ class MainScreen : GameScreen
         {
             Entities.TriggerRemoveEntity(tank.Barrel);
         }
+
+        switch (entity)
+        {
+            case Player:
+                playerDead = true;
+                break;
+            default:
+                break;
+        }
     }
 
     public override void Update()
     {
-        var mouseWorldPos = Renderer.Get().GetWorldMousePos();
-
         if (Global.K_State.IsKeyDown(Keys.Enter) && Global.LastKeys.IsKeyUp(Keys.Enter))
         {
             changeScreen(new MainScreen());
@@ -151,24 +156,20 @@ class MainScreen : GameScreen
             Renderer.Get().ToggleFullscreen();
         }
 
+        if(Global.K_State.IsKeyDown(Keys.LeftShift) && !playerDead)
+        {
+            changeCameraOffsetInRespectToMouse();
+        }
+        else
+        {
+            cameraOffset = Vector2.Zero;
+        }
+
         foreach (var ent in Entities.GetEntities().ToArray())
         {
             switch (ent)
             {
                 case Player player:
-                    if (Global.K_State.IsKeyDown(Keys.LeftShift))
-                    {
-                        cameraOffset = Renderer.Get().GetCameraOffsetTowardPoint
-                        (
-                            cameraOffset,
-                            mouseWorldPos,
-                            CAM_MAX_OFFSET
-                        );
-                    }
-                    else
-                    {
-                        cameraOffset = Vector2.Zero;
-                    }
                     PlayerController.UpdatePlayer(player);
                     break;
                 case Shell shell:
@@ -189,6 +190,17 @@ class MainScreen : GameScreen
 
         Renderer.Get().CameraFollow(player.Position + cameraOffset, CAMERA_LAG);
         unloadFinishedSounds();
+    }
+
+    private void changeCameraOffsetInRespectToMouse()
+    {
+        var mouseWorldPos = Renderer.Get().GetWorldMousePos();
+        cameraOffset = Renderer.Get().GetCameraOffsetTowardPoint
+        (
+            cameraOffset,
+            mouseWorldPos,
+            CAM_MAX_OFFSET
+        );
     }
 
     private void unloadFinishedSounds()

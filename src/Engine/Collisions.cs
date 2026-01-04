@@ -82,7 +82,7 @@ public static class Collision
         return false;
     }
 
-    public static void HandleRectVsRectCollisions(RectCollider collider, List<RectCollider> colliders)
+    public static void HandleRectVsRectCollisions(RectCollider collider, IEnumerable<RectCollider> colliders)
     {
         float distance = 0f;
         Vector2 contact = new(), normal = new();

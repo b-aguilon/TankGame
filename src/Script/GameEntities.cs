@@ -8,6 +8,8 @@ public class GameEntities
     public const float ENEMY_SHOOT_VOLUME = 0.2f;
     public const float PLAYER_SHOOT_VOLUME = 1f;
 
+    public const int ENEMY_HITBOX_DIMENSIONS = 32;
+
     private const int TANK_DIMENSIONS = 17;
     private const int BARREL_ROT_POINT = 3;
 
@@ -212,6 +214,7 @@ public class Enemy : Entity, TankData
     public float EnemyShootTime = 0f;
     public int MinFollowDistance = 65;
     public float ShootDelta = 1f;
+    public Rectangle HitBox;
 
     public RectCollider Collider {get; set;}
     public Barrel Barrel {get; set;}
