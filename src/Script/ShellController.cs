@@ -21,7 +21,7 @@ public static class ShellController
 
         foreach (var entity in Entities.GetEntities().Where
         (
-            e => e is TankData || e is Shell && e != shell.ShotBy
+            e => (e is TankData || e is Shell) && e != shell.ShotBy
         )
         .ToArray())
         {
@@ -62,8 +62,7 @@ public static class ShellController
                 break;
             case Enemy enemy:
                 otherHitbox = enemy.Collider;
-                var collidersIntersect = RectCollider.Intersects(hitBox, otherHitbox);
-                if (!collidersIntersect)
+                if (!RectCollider.Intersects(hitBox, otherHitbox))
                 {
                     return;
                 }

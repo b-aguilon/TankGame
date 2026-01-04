@@ -13,7 +13,7 @@ class MainScreen : GameScreen
 {
     private const int BARREL_LENGTH = 15;
     private const int CAMERA_LAG = 15;
-    private const int CAM_MAX_OFFSET = 110;
+    private const int CAM_MAX_OFFSET = 120;
 
     private bool playerDead = false;
 
@@ -76,72 +76,6 @@ class MainScreen : GameScreen
                 default:
                     break;
             }
-        }
-    }
-
-    private void onEntityShoot(object sender, EventArgs e)
-    {
-        if (sender is not Entity || sender is not TankData tank)
-            throw new Exception("Only tank entities can shoot");
-        
-        const string noTexture = "none";
-        const string defaultTexture = "shell.png";
-        Shell shell;
-        var entity = (Entity)sender; 
-        var shellTexture = noTexture;
-        var shootSound = Global.GetSound("shoot1.wav").CreateInstance();
-
-        switch (sender)
-        {
-            case Enemy enemy:
-                shootSound.Volume = GameEntities.ENEMY_SHOOT_VOLUME;
-                if (enemy.EnemyType == EnemyType.Fast || enemy.EnemyType == EnemyType.Stationary)
-                    shellTexture = "shellFast.png";
-                break;
-            case Player:
-                shootSound.Volume = GameEntities.PLAYER_SHOOT_VOLUME;
-                break;
-            default:
-                throw new NotImplementedException($"{sender.GetType()}");
-        }
-
-        if (shellTexture == noTexture)
-            shellTexture = defaultTexture;
-
-        shootSound.Play();
-        soundInstances.Add(shootSound);
-        shell = GameEntities.MakeShell
-        (
-            entity.Position + tank.Barrel.Direction * BARREL_LENGTH,
-            shellTexture, tank.Barrel.Rotation, 
-            tank.ShellSpeed
-        );
-        shell.ShotBy = entity;
-        Entities.TriggerAddEntity(shell);
-    }
-
-    protected override void entityAddedEffects(Entity entity)
-    {
-        if (entity is TankData tank)
-        {
-            Entities.TriggerAddEntity(tank.Barrel);
-        }
-    }
-
-    protected override void entityRemovedEffects(Entity entity)
-    {
-        if (entity is TankData tank)
-        {
-            Entities.TriggerRemoveEntity(tank.Barrel);
-        }
-
-        switch (entity)
-        {
-            case Player:
-                playerDead = true;
-                break;
-            default:
-                break;
         }
     }
 
@@ -238,5 +172,71 @@ class MainScreen : GameScreen
     protected override void unloadGameScreen()
     {
         GameEntities.ClearShootListeners();
+    }
+
+    private void onEntityShoot(object sender, EventArgs e)
+    {
+        if (sender is not Entity || sender is not TankData tank)
+            throw new Exception("Only tank entities can shoot");
+        
+        const string noTexture = "none";
+        const string defaultTexture = "shell.png";
+        Shell shell;
+        var entity = (Entity)sender; 
+        var shellTexture = noTexture;
+        var shootSound = Global.GetSound("shoot1.wav").CreateInstance();
+
+        switch (sender)
+        {
+            case Enemy enemy:
+                shootSound.Volume = GameEntities.ENEMY_SHOOT_VOLUME;
+                if (enemy.EnemyType == EnemyType.Fast || enemy.EnemyType == EnemyType.Stationary)
+                    shellTexture = "shellFast.png";
+                break;
+            case Player:
+                shootSound.Volume = GameEntities.PLAYER_SHOOT_VOLUME;
+                break;
+            default:
+                throw new NotImplementedException($"{sender.GetType()}");
+        }
+
+        if (shellTexture == noTexture)
+            shellTexture = defaultTexture;
+
+        shootSound.Play();
+        soundInstances.Add(shootSound);
+        shell = GameEntities.MakeShell
+        (
+            entity.Position + tank.Barrel.Direction * BARREL_LENGTH,
+            shellTexture, tank.Barrel.Rotation, 
+            tank.ShellSpeed
+        );
+        shell.ShotBy = entity;
+        Entities.TriggerAddEntity(shell);
+    }
+
+    protected override void entityAddedEffects(Entity entity)
+    {
+        if (entity is TankData tank)
+        {
+            Entities.TriggerAddEntity(tank.Barrel);
+        }
+    }
+
+    protected override void entityRemovedEffects(Entity entity)
+    {
+        if (entity is TankData tank)
+        {
+            Entities.TriggerRemoveEntity(tank.Barrel);
+        }
+
+        switch (entity)
+        {
+            case Player:
+                playerDead = true;
+                break;
+            default:
+                break;
+        }
     }
 }
