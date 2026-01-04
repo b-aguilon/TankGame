@@ -55,8 +55,7 @@ static class Levels
         return map.Tilesets.ToDictionary
         (
             tileset => tileset.Image.Value.Source.Value,
-            tileset => Texture2D.FromFile(Global.Graphics.GraphicsDevice, 
-                $"{Global.ASSETS_PATH}/assets/png/{tileset.Image.Value.Source.Value}")
+            tileset => Global.GetTexture($"{tileset.Image.Value.Source.Value.Split("/png/")[1]}")
         );
     }
 

@@ -5,35 +5,38 @@ namespace Script;
 
 public class GameEntities
 {
+    public const float ENEMY_SHOOT_VOLUME = 0.2f;
+    public const float PLAYER_SHOOT_VOLUME = 1f;
+
     private const int TANK_DIMENSIONS = 17;
     private const int BARREL_ROT_POINT = 3;
 
-    private const int PLAYER_SPEED = 75;
+    private const int PLAYER_SPEED = 70;
     private const int PLAYER_SHELL_SPEED = 140;
-    private const float PLAYER_FIRERATE = 0.2f;
+    private const float PLAYER_FIRERATE = 0.3f;
     private const float PLAYER_ROT_SPEED = MathHelper.Pi / 70f;
 
-    private const int ENEMY_NORMAL_SPEED = 55;
-    private const int ENEMY_NORMAL_SHELL_SPEED = 140;
+    private const int ENEMY_NORMAL_SPEED = 45;
+    private const int ENEMY_NORMAL_SHELL_SPEED = 120;
 
-    private const int ENEMY_FAST_SPEED = 150;
-    private const int ENEMY_FAST_SHELL_SPEED = 240;
+    private const int ENEMY_FAST_SPEED = 180;
+    private const int ENEMY_FAST_SHELL_SPEED = 210;
 
     private const int ENEMY_STATIONARY_SHELL_SPEED = 300;
 
     private const int ENEMY_MIN_FOLLOW_DISTANCE = 65;
 
     private const int ENEMY_FOLLOW_DISTANCE_RANGE = 40;
-    private const int ENEMY_SPEED_RANGE = 50;
-    private const float ENEMY_MAX_FIRERATE = 1.25f;
-    private const float ENEMY_MIN_FIRERATE = 0.75f;
+    private const int ENEMY_SPEED_RANGE = 40;
+    private const float ENEMY_MAX_FIRERATE = 1.6f;
+    private const float ENEMY_MIN_FIRERATE = 0.6f;
     private const float ENEMY_MAX_ROT_SPEED = MathHelper.Pi / 50f;
     private const float ENEMY_MIN_ROT_SPEED = MathHelper.Pi / 110f;
 
     public static Player MakePlayer(Vector2 pos)
     {
         var player = new Player();
-        player.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/tankPlayer.png");
+        player.Texture = Global.GetTexture("tankPlayer.png");
         player.Source = new Rectangle(0, 0, player.Texture.Width, player.Texture.Height);
         player.Width = TANK_DIMENSIONS;
         player.Height = TANK_DIMENSIONS;
@@ -45,7 +48,7 @@ public class GameEntities
         player.Collider = new RectCollider(player.Position - player.DrawOffset / 2, new(player.Width, player.Height));
         player.Direction = Vector2.UnitX;
         player.TankDir = (TankDir)(-1);
-        player.Barrel = MakeTankBarrel(player.Position, BARREL_ROT_POINT);
+        player.Barrel = makeTankBarrel(player.Position, BARREL_ROT_POINT, Global.GetTexture("tankBarrel.png"));
         player.Barrel.LayerDepth = 0.45f;
         player.Speed = PLAYER_SPEED;
         player.RotationSpeed = PLAYER_ROT_SPEED;
@@ -63,11 +66,12 @@ public class GameEntities
             minFollowDistance:ENEMY_MIN_FOLLOW_DISTANCE, 
             shellSpeed:ENEMY_STATIONARY_SHELL_SPEED, 
             "tank.png", 
-            "tankBarrelStationary.png"
+            "tankBarrelStationary.png",
+            EnemyType.Stationary
         );
     }
 
-    public static Enemy MakeEnemyMoving(Vector2 pos)
+    public static Enemy MakeEnemyNormal(Vector2 pos)
     {
         return MakeEnemy
         (
@@ -76,7 +80,8 @@ public class GameEntities
             minFollowDistance:ENEMY_MIN_FOLLOW_DISTANCE, 
             shellSpeed:ENEMY_NORMAL_SHELL_SPEED, 
             "stationaryTank.png", 
-            "stationaryBarrel.png"
+            "stationaryBarrel.png",
+            EnemyType.Normal
         );
     }
 
@@ -89,16 +94,26 @@ public class GameEntities
             minFollowDistance:ENEMY_MIN_FOLLOW_DISTANCE, 
             shellSpeed:ENEMY_FAST_SHELL_SPEED, 
             "tankFast.png", 
-            "tankFastBarrel.png"
+            "tankFastBarrel.png",
+            EnemyType.Fast
         );
     }
 
-    private static Enemy MakeEnemy(Vector2 pos, int speed, int minFollowDistance, int shellSpeed, string textureFile, string barrelFile)
+    private static Enemy MakeEnemy
+    (
+        Vector2 pos, 
+        int speed, 
+        int minFollowDistance, 
+        int shellSpeed, 
+        string textureFile, 
+        string barrelFile, 
+        EnemyType type
+    )
     {
         var random = Global.Rng;
 
         var enemy = new Enemy();
-        enemy.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/{textureFile}");
+        enemy.Texture = Global.GetTexture(textureFile);
         enemy.Source = new Rectangle(0, 0, enemy.Texture.Width, enemy.Texture.Height);
         enemy.Width = TANK_DIMENSIONS;
         enemy.Height = TANK_DIMENSIONS;
@@ -109,10 +124,11 @@ public class GameEntities
         enemy.Collider = new RectCollider(enemy.Position - enemy.DrawOffset / 2, new(enemy.Width, enemy.Height));
         enemy.Direction = Vector2.UnitX;
         enemy.TankDir = TankDir.Right;
-        enemy.Barrel = MakeTankBarrel(enemy.Position, BARREL_ROT_POINT);
-        enemy.Barrel.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/{barrelFile}");
+        var barrelTexture = Global.GetTexture(barrelFile);
+        enemy.Barrel = makeTankBarrel(enemy.Position, BARREL_ROT_POINT, barrelTexture);
         enemy.Barrel.LayerDepth = 0.1f;
         enemy.MinFollowDistance = minFollowDistance;
+        enemy.EnemyType = type;
 
         if (speed != 0)
             enemy.Speed = speed + random.Next(-ENEMY_SPEED_RANGE / 2, ENEMY_SPEED_RANGE / 2) + 1;
@@ -125,10 +141,10 @@ public class GameEntities
         return enemy;
     }
 
-    public static Shell MakeShell(Vector2 pos, float direction, float speed)
+    public static Shell MakeShell(Vector2 pos, string texture, float direction, float speed)
     {
         var shell = new Shell();
-        shell.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/shell.png");
+        shell.Texture = Global.GetTexture(texture);
         shell.Source = new Rectangle(0, 0, shell.Texture.Width, shell.Texture.Height);
         shell.Width = shell.Texture.Width;
         shell.Height = shell.Texture.Height;
@@ -139,10 +155,10 @@ public class GameEntities
         return shell;
     }
 
-    private static Barrel MakeTankBarrel(Vector2 pos, int cannonHeadRotationPoint)
+    private static Barrel makeTankBarrel(Vector2 pos, int cannonHeadRotationPoint, Texture2D barrelFile)
     {
         var barrel = new Barrel();
-        barrel.Texture = Texture2D.FromFile(Global.Graphics.GraphicsDevice, $"{Global.ASSETS_PATH}png/tankBarrel.png");;
+        barrel.Texture = barrelFile;
         barrel.Source = new Rectangle(0, 0, barrel.Texture.Width, barrel.Texture.Height);
         barrel.Width = barrel.Texture.Width;
         barrel.Height = barrel.Texture.Height;
@@ -192,6 +208,7 @@ public class Player : Entity, TankData
 
 public class Enemy : Entity, TankData
 {
+    public EnemyType EnemyType;
     public float EnemyShootTime = 0f;
     public int MinFollowDistance = 65;
     public float ShootDelta = 1f;
@@ -204,6 +221,8 @@ public class Enemy : Entity, TankData
     public float ShellSpeed {get; set;} = 70;
     public float RotationSpeed {get; set;}
 }
+
+public enum EnemyType { Stationary, Normal, Fast }
 
 public class Shell : Entity
 {

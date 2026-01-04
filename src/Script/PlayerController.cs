@@ -49,7 +49,7 @@ public static class PlayerController
         }
 
         player.ShootTime += Global.DELTA_TIME;
-        if (Global.LeftMouseClicked() && player.ShootDelta <= player.ShootTime)
+        if (Global.M_State.LeftButton == ButtonState.Pressed && player.ShootDelta <= player.ShootTime)
         {
             GameEntities.TriggerEntityOnShoot(player);
             player.ShootTime = 0f;

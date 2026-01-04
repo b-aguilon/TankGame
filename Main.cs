@@ -35,7 +35,7 @@ public class MainGame : Game
     protected override void LoadContent()
     {
         spriteBatch = new SpriteBatch(GraphicsDevice);
-        Global.Load(graphics, spriteBatch);
+        Global.Load(graphics, spriteBatch, "assets");
         changeScreen(new Script.MainScreen());
     }
 

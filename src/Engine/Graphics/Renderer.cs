@@ -76,7 +76,7 @@ partial class Renderer
         batch.End();
     }
 
-    public void SetFullscreen()
+    public void ToggleFullscreen()
     {
         if (Global.Graphics.IsFullScreen)
         {
@@ -101,7 +101,7 @@ partial class Renderer
     public Vector2 GetWorldMousePos()
     {
         var mousePos = Global.M_State.Position.ToVector2();
-        return (mousePos - blackBarsOffset) / scale + cameraPos + camOffset;
+        return (mousePos - blackBarsOffset) / scale + CameraPos + centerCameraOffset;
     }
 
     public Vector2 GetScreenMousePos()

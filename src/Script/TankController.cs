@@ -7,7 +7,7 @@ namespace Script;
 
 public static class TankController
 {
-    private const float EPSILON = MathHelper.Pi / 30f;
+    private const float EPSILON = MathHelper.Pi / 20f;
 
     public static void UpdateTank(Entity ent, TankData tankData, List<RectCollider> colliders)
     {

@@ -51,10 +51,6 @@ abstract class GameScreen
     {
         Entities.ClearEntityAddedListeners();
         Entities.ClearEntityRemovedListeners();
-        foreach (var ent in Entities.GetEntities())
-        {
-            ent.Texture.Dispose();
-        }
         Entities.ClearEntities();
         unloadGameScreen();
     }

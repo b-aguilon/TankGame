@@ -14,8 +14,10 @@ public static class EnemyController
     {
         if (Vector2.Distance(enemy.Position, target) < enemy.MinFollowDistance)
         {
+            return;
         }
-        else if (enemy.Position.X > target.X && enemy.Position.Y > target.Y)
+
+        if (enemy.Position.X > target.X && enemy.Position.Y > target.Y)
         {
             enemy.TankDir = TankDir.UpLeft;
         }
