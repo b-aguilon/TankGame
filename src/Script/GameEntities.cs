@@ -13,23 +13,23 @@ public class GameEntities
     private const int TANK_DIMENSIONS = 17;
     private const int BARREL_ROT_POINT = 3;
 
-    private const int PLAYER_SPEED = 70;
-    private const int PLAYER_SHELL_SPEED = 140;
+    private const int PLAYER_SPEED = 75;
+    private const int PLAYER_SHELL_SPEED = 150;
     private const float PLAYER_FIRERATE = 0.3f;
     private const float PLAYER_ROT_SPEED = MathHelper.Pi / 70f;
 
-    private const int ENEMY_NORMAL_SPEED = 45;
+    private const int ENEMY_NORMAL_SPEED = 50;
     private const int ENEMY_NORMAL_SHELL_SPEED = 120;
 
     private const int ENEMY_FAST_SPEED = 180;
-    private const int ENEMY_FAST_SHELL_SPEED = 220;
+    private const int ENEMY_FAST_SHELL_SPEED = 240;
 
     private const int ENEMY_STATIONARY_SHELL_SPEED = 300;
 
     private const int ENEMY_MIN_FOLLOW_DISTANCE = 65;
 
     private const int ENEMY_FOLLOW_DISTANCE_RANGE = 40;
-    private const int ENEMY_SPEED_RANGE = 40;
+    private const int ENEMY_SPEED_RANGE = 50;
     private const float ENEMY_MAX_FIRERATE = 1.6f;
     private const float ENEMY_MIN_FIRERATE = 0.6f;
     private const float ENEMY_MAX_ROT_SPEED = MathHelper.Pi / 50f;

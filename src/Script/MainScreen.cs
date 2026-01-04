@@ -13,7 +13,7 @@ class MainScreen : GameScreen
 {
     private const int BARREL_LENGTH = 15;
     private const int CAMERA_LAG = 15;
-    private const int CAM_MAX_OFFSET = 120;
+    private const int CAM_MAX_OFFSET = 105;
 
     private bool playerDead = false;
 
@@ -205,9 +205,11 @@ class MainScreen : GameScreen
 
         shootSound.Play();
         soundInstances.Add(shootSound);
+
+        var shellPositionOffset = new Vector2(1, 2);
         shell = GameEntities.MakeShell
         (
-            entity.Position + tank.Barrel.Direction * BARREL_LENGTH,
+            (entity.Position - shellPositionOffset) + tank.Barrel.Direction * BARREL_LENGTH,
             shellTexture, tank.Barrel.Rotation, 
             tank.ShellSpeed
         );
